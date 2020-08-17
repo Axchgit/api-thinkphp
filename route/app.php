@@ -1,4 +1,12 @@
 <?php
+/*
+ * @Author: xch
+ * @Date: 2020-08-15 11:15:58
+ * @LastEditTime: 2020-08-15 17:45:13
+ * @LastEditors: xch
+ * @Description: 
+ * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\route\app.php
+ */
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
@@ -15,3 +23,7 @@ Route::get('think', function () {
 });
 
 Route::get('hello/:name', 'index/hello');
+
+//登录模块
+Route::resource('login','Login');
+Route::rest('save',['POST', '/sendCode','sendcode']);
