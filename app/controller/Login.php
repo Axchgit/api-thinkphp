@@ -2,10 +2,10 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2020-08-17 22:03:26
+ * @LastEditTime: 2020-08-19 14:27:03
  * @LastEditors: xch
  * @Description: 
- * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\login.php
+ * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Login.php
  */
 
 
@@ -154,7 +154,7 @@ class Login extends Base
             }
             //判断验证码是否一致
             if ($code == $post['logcode']) {
-                $token = signToken($admin_info['uuid']);
+                $token = signToken($admin_info['uuid'],$admin_info['rule']);
                     $data = [
                         'token' => $token,
                         'uuid' => $admin_info['uuid']
