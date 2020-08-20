@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2020-08-17 22:15:40
+ * @LastEditTime: 2020-08-20 15:53:47
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Test.php
@@ -18,8 +18,9 @@ namespace app\controller;
 // use think\facade\Request;
 use think\Request;
 use app\model\Admin as AdminModel;
+use think\facade\Db;
 
-class Test
+class Test extends Base
 {
     public function testOne(){
         // $admin_model = new AdminModel();
@@ -36,6 +37,21 @@ class Test
         // $admin_model = new AdminModel();
         // $data = $admin_model->deleteLogcode('呵粑粑牛');
         return createGuid();
+    }
+    public function testFour($uuid){
+        $records = [
+            'uuid' => $uuid,
+            'login_time' => time(),
+            'login_ip' => request()->host()
+        ];
+        Db::table('login_record')->insert($records);
+        return true;
+    }
+    //中间件传参
+    public function testFive(Request $request){
+        $res = $request->data;
+        // return $res;
+        return $this->create($res['data']->uuid);
     }
 
     /**

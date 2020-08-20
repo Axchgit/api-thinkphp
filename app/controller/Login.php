@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2020-08-19 14:27:03
+ * @LastEditTime: 2020-08-20 16:27:49
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Login.php
@@ -16,64 +16,33 @@ namespace app\controller;
 // use think\facade\Request;
 use think\Request;
 use app\model\Admin as AdminModel;
+use app\model\EmployeeLogin as EmpModel;
 
 use think\facade\Db;
 
 
 class Login extends Base
 {
-
     /**
-     * @var \think\Request Request实例
-     */
-    protected $request;
-
-    /**
-     * 构造方法
-     * @param Request $request Request对象
-     * @access public
-     */
-    public function __construct(Request $request)
-    {
-        $this->request = $request;
-    }
-
-    /**
-     * @description: 测试方法
-     * @param {type} 
-     * @return {type} 
-     */
-    public function test()
-    {
-        $post =  $this->request->param();
-        $admin_model = new AdminModel();
-        $admin_model -> deleteLogcode(123);
-        return '123';
-
-
-        // return $this->tokenCheck($post['token']);
-        return $this->create([], '12312', '', 'json');
-    }
-    /**
-     * 返回用户信息
+     * 返回管理员信息
      *
      * @return \think\Response
      */
-    public function index()
+    public function selectAdminInfo()
     {
         //从请求头啊获取token
-        $token =  $this->request->header('Authorization');   
+        $token =  request()->header('Authorization');
         // return $token;       
         //检查token合法性    
         $res = $this->tokenCheck($token);
         // return gettype($res);
-        if($res['code'] == 2){
+        if ($res['code'] == 2) {
             //知识点:php连接字符串用 . 
-            return $this->create('','token出错:'.$res['msg'],304);
+            return $this->create('', 'token出错:' . $res['msg'], 304);
         }
         // return 123;
         //知识点:php访问对象属性:$res['data']->uuid
-        $admin_info = AdminModel::where('uuid',$res['data']->uuid)->find();
+        $admin_info = AdminModel::where('uuid', $res['data']->uuid)->find();
         return $this->create($admin_info);
     }
     /**
@@ -81,7 +50,7 @@ class Login extends Base
      * @param {type} 
      * @return {type} 
      */
-    public function sendCode()
+    public function sendAdminCode()
     {
         $post =  $this->request->param();
         //知识点:PHP获得随机数
@@ -92,7 +61,7 @@ class Login extends Base
         $log_code = $code + $time * 1000000;
         $admin_model = new AdminModel();
         //删除之前的登录码
-        $admin_model -> deleteLogcode($post['username']);
+        $admin_model->deleteLogcode($post['username']);
         //保存登录码信息到临时表
         $res =  $admin_model->saveLogCode($post['username'], $log_code);
         //知识点:PHP类型转换
@@ -135,8 +104,8 @@ class Login extends Base
         if (!empty($admin_info)) {
             //根据管理员uuid查找登录码
             $code_info = Db::table('temp_code')->where('uuid', $admin_info['uuid'])->find();
-            if(empty($code_info)){
-                return $this->create('','验证码错误',204);
+            if (empty($code_info)) {
+                return $this->create('', '验证码错误', 204);
             }
             //截取登录码
             $string_code = (string)$code_info['code'];
@@ -150,90 +119,74 @@ class Login extends Base
             //判断登录码是否过期
             if ($time + config("login.code_timeout") <= $now) {
                 // return $time + 60;
-                return $this->create('','验证码超时',201);
+                return $this->create('', '验证码超时', 201);
             }
             //判断验证码是否一致
             if ($code == $post['logcode']) {
-                $token = signToken($admin_info['uuid'],$admin_info['rule']);
-                    $data = [
-                        'token' => $token,
-                        'uuid' => $admin_info['uuid']
-                    ];
+                $token = signToken($admin_info['uuid'], $admin_info['rule']);
+                $data = [
+                    'token' => $token,
+                    'uuid' => $admin_info['uuid']
+                ];
                 if ($delete_res) {
-                    return $this->create($data,'登录成功');
-                }else{
-                    return $this->create('','服务器出现了一个错误',204);
+                    //插入登录记录
+                    $records = [
+                        'uuid' => $admin_info['uuid'],
+                        'login_time' => time(),
+                        'login_ip' => request()->host()
+                    ];
+                    Db::table('login_record')->insert($records);
+                    //成功返回token及uuid
+                    return $this->create($data, '登录成功');
+                } else {
+                    return $this->create('', '服务器出现了一个错误', 204);
                 }
-            }else{
-                return $this->create('','验证码错误',204);
+            } else {
+                return $this->create('', '验证码错误', 204);
             }
+        }else{
+            return $this->create('', '账户或密码错误', 204);
         }
     }
 
-    /**
-    //  * 显示创建资源表单页.
-    //  *
-    //  * @return \think\Response
-    //  */
-    // public function create()
-    // {
-    //     //
-    // }
-
-    /**
-    //  * 保存新建的资源
-    //  *
-    //  * @param  \think\Request  $request
-    //  * @return \think\Response
-    //  */
-    // public function save(Request $request)
-    // {
-    //     //
-    // }
-
-    // /**
-    //  * 显示指定的资源
-    //  *
-    //  * @param  int  $id
-    //  * @return \think\Response
-    //  */
-    // public function read($id)
-    // {
-    //     //
-    //     return $this->create($id);
-    // }
-
-    /**
-     * 显示编辑资源表单页.
-     *
-     * @param  int  $id
-     * @return \think\Response
-     */
-    public function edit($id)
+    public function checkEmpLogin()
     {
-        //
+        //获取请求信息
+        $post =  request()->param();
+        //实例化模型
+        $emp_model = new EmpModel();
+        //获取管理员信息
+        $emp_info = $emp_model->findEmployee($post['username'], $post['password']);
+        $emp_rule = $emp_model->getInfoByUuid($emp_info['uuid'],'rule');
+        //检查是否为空
+        if (!empty($emp_info) && !empty($emp_rule)) {
+            $token = signToken($emp_info['uuid'], $emp_rule);
+            $data = [
+                'token' => $token,
+                'uuid' => $emp_info['uuid']
+            ];
+            //添加登录记录
+            $records = [
+                'uuid' => $emp_info['uuid'],
+                'login_time' => time(),
+                'login_ip' => request()->host()
+            ];
+            if (Db::table('login_record')->insert($records)) {
+                //成功返回token及uuid
+                return $this->create($data, '登录成功');
+            } else {
+                return $this->create('', '验证码错误', 204);
+            }
+        }else{
+            return $this->create('', '账户或密码错误', 204);
+        }
     }
 
-    /**
-     * 保存更新的资源
-     *
-     * @param  \think\Request  $request
-     * @param  int  $id
-     * @return \think\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
+    public function selectEmpInfo(Request $request){
+        $res = $request->data;
+        $emp_info = EmpModel::where('uuid', $res['data']->uuid)->find();
+        return $this->create($emp_info);
     }
 
-    /**
-     * 删除指定资源
-     *
-     * @param  int  $id
-     * @return \think\Response
-     */
-    public function delete($id)
-    {
-        //
-    }
+
 }

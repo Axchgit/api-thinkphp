@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-19 14:18:43
- * @LastEditTime: 2020-08-19 15:17:12
+ * @LastEditTime: 2020-08-20 16:34:42
  * @LastEditors: xch
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\middleware\CheckRequest.php
  * @Description: 
@@ -26,10 +26,9 @@ class CheckRequest extends Base
      * @param \Closure       $next
      * @return Response
      */
-    public function handle($request, \Closure $next, int $need_rule = 6)
+    public function handle($request, \Closure $next, int $need_rule = 1)
     {
         //
-        $post = request()->param();
         $token = request()->header('Authorization');
         if (empty($token)) {
             return $this->create('', '令牌不存在', 304);
@@ -41,6 +40,9 @@ class CheckRequest extends Base
         if ($res['data']->rule >= $need_rule) {
             return $this->create('', '没有权限', 204);
         };
+        // return $this->create('', '没有权限', 204);
+
+        $request->data = $res;
         $response = $next($request);
         return $response;
     }
