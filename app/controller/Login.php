@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2020-08-20 16:27:49
+ * @LastEditTime: 2020-08-21 17:48:31
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Login.php
@@ -52,7 +52,7 @@ class Login extends Base
      */
     public function sendAdminCode()
     {
-        $post =  $this->request->param();
+        $post =  request()->param();
         //知识点:PHP获得随机数
         $code = rand(111111, 999999);
         //知识点:PHP获取时间戳
@@ -95,7 +95,7 @@ class Login extends Base
     public function checkAdminLogin()
     {
         //获取请求信息
-        $post =  $this->request->param();
+        $post =  request()->param();
         //实例化模型
         $admin_model = new AdminModel();
         //获取管理员信息
@@ -123,10 +123,11 @@ class Login extends Base
             }
             //判断验证码是否一致
             if ($code == $post['logcode']) {
-                $token = signToken($admin_info['uuid'], $admin_info['rule']);
+                $token = signToken($admin_info['uuid'], $admin_info['role']);
                 $data = [
                     'token' => $token,
-                    'uuid' => $admin_info['uuid']
+                    'uuid' => $admin_info['uuid'],
+                    'role' => $admin_info['role']
                 ];
                 if ($delete_res) {
                     //插入登录记录
@@ -157,13 +158,14 @@ class Login extends Base
         $emp_model = new EmpModel();
         //获取管理员信息
         $emp_info = $emp_model->findEmployee($post['username'], $post['password']);
-        $emp_rule = $emp_model->getInfoByUuid($emp_info['uuid'],'rule');
+        $emp_role = $emp_model->getInfoByUuid($emp_info['uuid'],'role');
         //检查是否为空
-        if (!empty($emp_info) && !empty($emp_rule)) {
-            $token = signToken($emp_info['uuid'], $emp_rule);
+        if (!empty($emp_info) && !empty($emp_role)) {
+            $token = signToken($emp_info['uuid'], $emp_role);
             $data = [
                 'token' => $token,
-                'uuid' => $emp_info['uuid']
+                'uuid' => $emp_info['uuid'],
+                'role' => $emp_role
             ];
             //添加登录记录
             $records = [
@@ -183,8 +185,9 @@ class Login extends Base
     }
 
     public function selectEmpInfo(Request $request){
+        $emp_model = new EmpModel();
         $res = $request->data;
-        $emp_info = EmpModel::where('uuid', $res['data']->uuid)->find();
+        $emp_info = $emp_model->where('uuid', $res['data']->uuid)->find();
         return $this->create($emp_info);
     }
 

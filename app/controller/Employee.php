@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2020-08-19 22:17:11
+ * @LastEditTime: 2020-08-21 15:08:52
  * @LastEditors: xch
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Employee.php
  * @Description: 
@@ -57,10 +57,10 @@ class Employee extends Base
      * @param {type} 
      * @return {type} 
      */
-    public function selectByRule(){
+    public function selectByRole(){
         $post = request()->param();
         $emp_model = new EmployeeModel();
-        $data = $emp_model->getEmpByRule($post['list_rows'],'',['query'=>$post],$post['rule']);
+        $data = $emp_model->getEmpByRole($post['list_rows'],'',['query'=>$post],$post['role']);
         if($data){
             return $this->create($data,'查询成功');
         }else{

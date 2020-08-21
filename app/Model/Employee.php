@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-08-19 18:24:23
+ * @LastEditTime: 2020-08-21 15:05:40
  * @LastEditors: xch
  * @Description: 员工信息
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Employee.php
@@ -59,9 +59,9 @@ class Employee extends Model
     //     }
     // }
     //通过权限查询,多个数据,用到分页
-    public function getEmpByRule($list_rows, $isSimple = false, $config, $rule)
+    public function getEmpByRole($list_rows, $isSimple = false, $config, $role)
     {
-        $data = $this->where('rule', $rule)->paginate($list_rows, $isSimple = false, $config);
+        $data = $this->where('role', $role)->paginate($list_rows, $isSimple = false, $config);
         if ($data->isEmpty()) {
             return false;
         } else {
