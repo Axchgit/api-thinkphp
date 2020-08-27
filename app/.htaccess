@@ -1,1 +1,2 @@
 deny from all
+$header = Request::instance()->header("Authorization");
