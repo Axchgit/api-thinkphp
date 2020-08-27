@@ -31,6 +31,16 @@ class Employee extends Model
             return $data;
         }
     }
+    //通过uuid查询
+    public function getInfoByUuid($emp_uuid, $value)
+    {
+        return $this->where('uuid', $emp_uuid)->value($value);
+    }
+    //通过工号查询
+    public function getInfoByWorkNum($work_num, $value)
+    {
+        return $this->where('work_num', $work_num)->value($value);
+    }
     //通过工号/姓名查询
     public function getEmpByWrokNum($work_num, $real_name)
     {
@@ -47,9 +57,10 @@ class Employee extends Model
             return $data;
         }
     }
-    // //通过姓名查询
-    // public function getEmpByName($real_name)
+    //通过姓名查询
+    // public function findEmpAc($work_num,$email)
     // {
+
     //     //姓名可能会有重复,使用select查询
     //     $data = $this->where('real_name', $real_name)->select();
     //     if ($data->isEmpty()) {
@@ -68,4 +79,23 @@ class Employee extends Model
             return $data;
         }
     }
+
+    public function saveEmpCode($work_num, $time_code,$msg = '验证码')
+    {
+        $emp_uuid = $this->where('work_num',$work_num)->value('uuid');        
+        $data = [
+            'uuid' => $emp_uuid,
+            'code' => $time_code,
+            'msg' => $msg
+        ];
+        //知识点:跨表数据库操作
+        return Db::table('temp_code')->insert($data);
+        // $admin->code = $log_code;
+    }
+    public function deleteEmpCode($work_num)
+    {
+        $emp_uuid = $this->where('work_num',$work_num)->value('uuid');
+        return Db::table('temp_code')->where('uuid',$emp_uuid)->delete();
+    }
+
 }

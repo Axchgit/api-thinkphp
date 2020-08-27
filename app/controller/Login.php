@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2020-08-21 17:48:31
+ * @LastEditTime: 2020-08-24 01:58:33
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Login.php
@@ -67,6 +67,7 @@ class Login extends Base
         //知识点:PHP类型转换
         $string_code = (string)$log_code;
         //     //知识点:字符串截取指定片段
+        //TODO:优化逻辑:$code重复
         $code = substr($string_code, 10, 6);
         //查询账户对应email
         $admin_email = $admin_model->selectMail($post['username']);
@@ -177,7 +178,7 @@ class Login extends Base
                 //成功返回token及uuid
                 return $this->create($data, '登录成功');
             } else {
-                return $this->create('', '验证码错误', 204);
+                return $this->create('', '未知错误', 204);
             }
         }else{
             return $this->create('', '账户或密码错误', 204);
@@ -187,6 +188,7 @@ class Login extends Base
     public function selectEmpInfo(Request $request){
         $emp_model = new EmpModel();
         $res = $request->data;
+        // $emp_info = $emp_model->getAcInfo($res['data']->uuid);
         $emp_info = $emp_model->where('uuid', $res['data']->uuid)->find();
         return $this->create($emp_info);
     }

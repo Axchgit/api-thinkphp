@@ -1,4 +1,12 @@
 <?php
+/*
+ * @Author: xch
+ * @Date: 2020-08-15 11:15:58
+ * @LastEditTime: 2020-08-24 14:46:56
+ * @LastEditors: xch
+ * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\config\database.php
+ * @Description: 此为生产环境下的配置,开发环境配置在.env中
+ */
 
 return [
     // 默认使用的数据库连接配置
@@ -27,7 +35,7 @@ return [
             // 用户名
             'username'          => env('database.username', 'root'),
             // 密码
-            'password'          => env('database.password', ''),
+            'password'          => env('database.password', 'root'),
             // 端口
             'hostport'          => env('database.hostport', '3306'),
             // 数据库连接参数

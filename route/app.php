@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:15:58
- * @LastEditTime: 2020-08-21 15:18:29
+ * @LastEditTime: 2020-08-24 00:06:42
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\route\app.php
@@ -25,28 +25,39 @@ Route::get('think', function () {
 Route::get('hello/:name', 'index/hello');
 
 /****测试*****/
-Route::get('test/testthree','Test/testThree')->middleware('checkrequest',6);
-Route::get('test/testfive','Test/testFive')->middleware('checkrequest',6);
+Route::get('test/testthree','Test/testThree')->middleware('checkrequest',6)->allowCrossDomain();
+Route::get('test/testone','Test/testOne')->middleware('checkrequest',6)->allowCrossDomain();
 
+Route::get('test/testfive','Test/testFive')->middleware('checkrequest',6)->allowCrossDomain();
 
 /****登录模块*****/
-// Route::resource('login', 'Login');
-// Route::rest('save', ['POST', '/sendCode', 'sendcode']);
-//发送验证码请求
-Route::get('login/sendadmincode','Login/sendAdminCode');
-//验证登录请求
-Route::rule('login/checkadminlogin','Login/checkAdminLogin');
-//获取管理员信息请求
-Route::rule('login/selectadmininfo','Login/selectAdminInfo')->middleware('checkrequest',1);
-//员工登录
-Route::rule('login/checkEmplogin','Login/checkEmpLogin');
-Route::rule('login/selectempinfo','Login/selectEmpInfo')->middleware('checkrequest',5);
+Route::group('login', function () {
+    //发送验证码请求
+    Route::get('/', 'sendAdminCode')->allowCrossDomain();
+    //验证登录请求
+    Route::rule('checkadminlogin', 'checkAdminLogin')->allowCrossDomain();
+    //获取管理员信息请求
+    Route::rule('selectadmininfo', 'selectAdminInfo')->middleware('checkrequest',1)->allowCrossDomain();
+    //员工登录
+    Route::rule('checkEmplogin', 'checkEmpLogin')->allowCrossDomain();
+    Route::rule('selectempinfo', 'selectEmpInfo')->middleware('checkrequest',5)->allowCrossDomain();
 
-
-/****获取员工信息*****/
+})->completeMatch()->prefix('Login/');
+/****员工*****/
 // Route::resource('employee','Employee');
-Route::rule('employee/selectall', 'Employee/selectAll')->middleware('checkrequest',1);
-//根据工号获取信息,工号为8位数字
-Route::rule('employee/selectByInfo', 'Employee/selectByInfo')->middleware('checkrequest',1);// Route::get('employee/selectbyname', 'Employee/selectByName')->middleware('checkrequest',1);
-//根据权限获取信息
-Route::rule('employee/selectByRole','Employee/selectByRole')->middleware('checkrequest',1);
+Route::group('employee', function () {
+    //获取员工所有信息
+    Route::get('selectall', 'selectAll')->middleware('checkrequest',1)->allowCrossDomain();
+    //根据工号/姓名获取信息,工号为8位数字
+    Route::get('selectByInfo', 'selectByInfo')->middleware('checkrequest',1)->allowCrossDomain();
+    //根据权限获取信息
+    Route::get('selectByRole', 'selectByRole')->middleware('checkrequest',1)->allowCrossDomain();
+    Route::get('selectAcAll', 'selectAcAll')->middleware('checkrequest',1)->allowCrossDomain();
+    Route::post('sendRecoverCode', 'sendRecoverCode')->allowCrossDomain();
+    Route::post('sendActivateCode', 'sendActivateCode')->allowCrossDomain();
+    Route::post('checkRecover', 'checkRecover')->allowCrossDomain();
+    Route::post('updateAcPW', 'updateAcPW')->allowCrossDomain();
+    Route::post('createEmpAc', 'createEmpAc')->allowCrossDomain();
+
+
+})->completeMatch()->prefix('Employee/');

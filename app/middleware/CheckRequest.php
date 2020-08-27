@@ -1,14 +1,16 @@
 <?php
+declare(strict_types=1);
+
 /*
  * @Author: xch
  * @Date: 2020-08-19 14:18:43
- * @LastEditTime: 2020-08-21 15:06:32
+ * @LastEditTime: 2020-08-24 02:00:05
  * @LastEditors: xch
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\middleware\CheckRequest.php
  * @Description: 
  */
 
-declare(strict_types=1);
+// declare(strict_types=1);
 
 namespace app\middleware;
 
@@ -30,6 +32,7 @@ class CheckRequest extends Base
     {
         //
         $token = request()->header('Authorization');
+        // return json($token);
         if (empty($token)) {
             return $this->create('', '令牌不存在', 304);
         }
@@ -37,6 +40,7 @@ class CheckRequest extends Base
         if ($res['code'] == 2) {
             return $this->create('', $res['msg'], 304);
         }
+        // return json($res['data']->role);
         if ($res['data']->role >= $need_role) {
             return $this->create('', '没有权限', 204);
         };
