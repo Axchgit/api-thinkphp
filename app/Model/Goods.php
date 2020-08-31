@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-08-30 17:19:59
+ * @LastEditTime: 2020-09-01 01:06:15
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Goods.php
@@ -19,6 +19,7 @@ use think\facade\Db;
 
 class Goods extends Model
 {
+    //插入报表
     public function insertGoods($dataArr)
     {
         $goods = [];
@@ -65,6 +66,32 @@ class Goods extends Model
             return false;
         } else {
             return $this->saveAll($goods);
+        }
+    }
+
+    //查询goods
+    public function selectGoods($key, $value, $list_rows = 10, $isSimple = false, $config = '')
+    {
+        switch ($key) {
+            case 'order_id':
+                $data = $this->where($key, $value)->paginate($list_rows, $isSimple, $config);
+                break;
+            case 'goods_id':
+                $data = $this->where($key, $value)->paginate($list_rows, $isSimple, $config);
+                break;
+            case 'goods_name':
+                $data = $this->whereLike($key, '%' . $value . '%')->paginate($list_rows, $isSimple, $config);
+                break;
+            case 'shop_name':
+                $data = $this->whereLike($key, '%' . $value . '%')->paginate($list_rows, $isSimple, $config);
+                break;
+            default:
+                $data = $this->paginate($list_rows, $isSimple, $config);
+        }
+        if(empty($data)){
+            return false;
+        }else{
+            return $data;
         }
     }
 }
