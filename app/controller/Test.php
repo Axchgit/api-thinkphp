@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2020-08-20 15:53:47
+ * @LastEditTime: 2020-08-30 02:08:47
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Test.php
@@ -52,6 +52,36 @@ class Test extends Base
         $res = $request->data;
         // return $res;
         return $this->create($res['data']->uuid);
+    }
+    //前端表格数据
+    public function testSix(){
+        $post = request()->param();
+        $goods = [];
+        $dataArr =[
+            [
+            "订单号"=> 124465937518,
+            "父单号"=>0,
+            "订单状态"=> "待付款",
+            "下单时间"=> 44000.46486111111,
+            "商品ID"=> 10445274829,
+            ],
+            [
+            "订单号"=> 118921513114,
+            "父单号"=> 0,
+            "订单状态"=> "已付款",
+            "下单时间"=> 44000.46476851852,
+            "商品ID"=> 931177, 
+            ]];
+
+            foreach($dataArr as $k => $v){
+                $goods[$k]['id'] = $v['订单号'];
+                $goods[$k]['f_id'] = $v['父单号'];
+
+                // return [$k=>$v];
+            }
+            return json($goods);
+
+            // return json($post);
     }
 
     /**

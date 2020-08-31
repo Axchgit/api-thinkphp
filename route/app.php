@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:15:58
- * @LastEditTime: 2020-08-24 00:06:42
+ * @LastEditTime: 2020-08-30 15:13:26
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\route\app.php
@@ -61,3 +61,13 @@ Route::group('employee', function () {
 
 
 })->completeMatch()->prefix('Employee/');
+
+
+/**
+ * 商品信息
+ */
+
+ Route::group('goods',function(){
+    Route::post('uploadExcel', 'uploadExcel')->middleware('checkrequest',1)->allowCrossDomain();
+
+ })->completeMatch()->prefix('Goods/');

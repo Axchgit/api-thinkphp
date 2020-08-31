@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2020-08-22 17:11:44
+ * @LastEditTime: 2020-08-31 16:41:31
  * @LastEditors: xch
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Employee.php
  * @Description: 
@@ -16,6 +16,7 @@ use think\Request;
 
 use app\model\Employee as EmployeeModel;
 use app\model\EmployeeLogin as EmpLoginModel;
+use app\model\Performance as PerformanceModel;
 
 use think\facade\Db;
 
@@ -259,5 +260,15 @@ class Employee extends Base
         } else {
             return $this->create('', '验证码', 201);
         }
+    }
+
+    //提交业绩
+    public function submitPerformanc(){
+        $post = request()->param();
+        // $uuid = $post['uuid'];
+        $performance_model = new PerformanceModel();
+        $res = $performance_model->insertPerformance($post);
+        return $this->create($res,'',200);
+
     }
 }
