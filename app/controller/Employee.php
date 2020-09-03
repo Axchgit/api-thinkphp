@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2020-08-31 16:41:31
+ * @LastEditTime: 2020-09-04 02:31:32
  * @LastEditors: xch
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Employee.php
  * @Description: 
@@ -128,7 +128,7 @@ class Employee extends Base
             return $this->create($data, '暂无数据', 204);
         }
     }
-
+    //忘记密码-发送验证码
     public function sendRecoverCode()
     {
         $post = request()->param();
@@ -164,7 +164,7 @@ class Employee extends Base
             return $this->create('', '用户信息有误', 204);
         }
     }
-
+    //忘记密码-检查信息
     public function checkRecover()
     {
         $post = request()->param();
@@ -187,7 +187,7 @@ class Employee extends Base
             return $this->create('', '验证码错误', 204);
         }
     }
-
+    //忘记密码-修改
     public function updateAcPW()
     {
         $post = request()->param();
@@ -199,7 +199,7 @@ class Employee extends Base
             return $this->create('', '修改失败', 204);
         }
     }
-
+    //激活账号验证码
     public function sendActivateCode()
     {
         $post = request()->param();
@@ -232,7 +232,7 @@ class Employee extends Base
             return $this->create('', '用户信息有误', 204);
         }
     }
-
+    //激活账号
     public function createEmpAc()
     {
         $post = request()->param();
@@ -263,12 +263,74 @@ class Employee extends Base
     }
 
     //提交业绩
-    public function submitPerformanc(){
+    public function submitPerformanc(Request $request)
+    {
         $post = request()->param();
-        // $uuid = $post['uuid'];
+        $res = $request->data;
         $performance_model = new PerformanceModel();
-        $res = $performance_model->insertPerformance($post);
-        return $this->create($res,'',200);
-
+        $res = $performance_model->insertPerformance($res['data']->uuid, $post['goods_id']);
+        if ($res === true) {
+            return $this->create('', '添加成功', 200);
+        } else {
+            return $this->create($res, '添加失败', 204);
+        }
     }
+
+    //员工查询个人业绩
+    public function selectPerformanceByUuid(Request $request)
+    {
+        $post =  request()->param();
+        $res = $request->data;
+        $per_model = new PerformanceModel();
+        $key = !empty($post['key']) ? $post['key'] : '';
+        $value = !empty($post['value']) ? $post['value'] : '';
+        $list_rows = !empty($post['list_rows']) ? $post['list_rows'] : '';
+        $data = $per_model->selectPerformance($res['data']->uuid, $key, $value, $list_rows, false, ['query' => $post]);
+        if ($data) {
+            return $this->create($data, '查询成功');
+        } else {
+            return $this->create($data, '暂无数据', 204);
+        }
+    }
+
+    //员工删除个人业绩
+    public function deletePerformanceByUuuid(Request $request)
+    {
+        $post =  request()->param();
+        $res = $request->data;
+        $per_model = new PerformanceModel();
+        $res = $per_model->softDeletePerformance($res['data']->uuid, $post['id']);
+        if ($res === true) {
+            return $this->create('', '删除成功', 200);
+        } else {
+            return $this->create($res, '删除失败', 204);
+        }
+    }
+
+    //员工查询个人推广商品
+    public function selectPerformanceGoodsByUuid(Request $request)
+    {
+        $post =  request()->param();
+        $res = $request->data;
+        $per_model = new PerformanceModel();
+        $key = !empty($post['key']) ? $post['key'] : '';
+        $value = !empty($post['value']) ? $post['value'] : '';
+        $list_rows = !empty($post['list_rows']) ? $post['list_rows'] : '';
+        $data = $per_model->selectPerformanceGoods($res['data']->uuid, $key, $value, $list_rows, false, ['query' => $post]);
+        if ($data) {
+            return $this->create($data, '查询成功');
+        } else {
+            return $this->create($data, '暂无数据', 204);
+        }
+    }
+
+
+
+
+
+
+
+
+
+    //结束
 }

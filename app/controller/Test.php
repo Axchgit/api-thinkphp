@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2020-08-30 02:08:47
+ * @LastEditTime: 2020-09-02 01:58:48
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Test.php
@@ -30,7 +30,7 @@ class Test extends Base
     public function testTwo(){
         // $admin_model = new AdminModel();
         // $data = $admin_model->deleteLogcode('呵粑粑牛');
-        return json(true);
+        return time();
     }
     //获取一个uuid
     public function testThree(){
