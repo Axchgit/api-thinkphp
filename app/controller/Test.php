@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2020-09-02 01:58:48
+ * @LastEditTime: 2020-09-04 19:36:32
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Test.php
@@ -19,9 +19,36 @@ namespace app\controller;
 use think\Request;
 use app\model\Admin as AdminModel;
 use think\facade\Db;
+use app\model\Goods as GoodsModel;
+use app\model\GoodsTemp as GoodsTempModel;
+
+
 
 class Test extends Base
 {
+
+    public function eight(){
+
+        $goods_model = new GoodsModel();
+        // return '132';
+        return $goods_model->incrementalUpdata();
+
+    }
+    public function seven(){
+
+        $post =  request()->param();
+        $gt_model = new GoodsTempModel();
+        $data = $gt_model->insertGoods($post);
+        if ($data) {
+            return $this->create('', '成功', 200);
+        } else {
+            return $this->create('', '失败', 204);
+        }
+        // $admin_model = new AdminModel();
+        // $data = $admin_model->saveLogcode('呵粑粑牛',12321);
+
+    }
+
     public function testOne(){
         // $admin_model = new AdminModel();
         // $data = $admin_model->saveLogcode('呵粑粑牛',12321);
