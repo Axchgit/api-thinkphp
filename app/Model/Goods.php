@@ -15,6 +15,7 @@ namespace app\model;
 // use think\Db;
 use think\Model;
 use think\facade\Db;
+use app\model\GoodsTemp as GoodsTempModel;
 
 
 class Goods extends Model
@@ -22,6 +23,7 @@ class Goods extends Model
     //插入报表
     public function insertGoods($dataArr)
     {
+        $gt_mode = new GoodsTempModel();
         $goods = [];
         //CODE:将二维关联数组转换为数据库数组
         // foreach ($dataArr[0] as $k => $v) {
@@ -122,11 +124,43 @@ class Goods extends Model
             $goods[$k]['group_activity_name'] = empty($v['团活动名称']) ? '' : $v['团活动名称'];
         }
         // }
+        Db::startTrans();
+        try {
+            if (!empty($goods)) {
+                $gt_mode->limit(100)->insertAll($goods);
+            } else {
+                // Db::rollback();
+                return false;
+            }
+            //查询重复数据
+            $same = Db::view('goods')
+                ->view('goods_temp', 'goods_name', 'goods.order_id = goods_temp.order_id')
+                ->select();
+            //删除表里的重复数据
+            foreach ($same as $k => $v) {
+                Db::table('goods')->where('order_id', $v['order_id'])->delete();
+            }
+            //查询临时表数据
+            //知识点:查询时忽略某个字段
+            $data = Db::table('goods_temp')->withoutField('id')->select()->toArray();
+            if (empty($data)) {
+                // Db::rollback();
+                return '临时表数据为空';
+            }
+            $res = $this->limit(100)->insertAll($data);
+            if ($res) {
+                Db::table('goods_temp')->delete(true);
+                Db::commit();
+                return true;
+            } else {
+                // Db::rollback();
+                return '插入goods表失败'.$res;
+            }
+        } catch (\Exception  $e) {
+            Db::rollback();
+            // return '插入goods表失败';
 
-        if (empty($goods)) {
-            return false;
-        } else {
-            return $this->saveAll($goods);
+            return $e;
         }
     }
     //CODE:增量更新数据
@@ -136,22 +170,22 @@ class Goods extends Model
         /*更新数据*/
         //查询重复数据
         $same = Db::view('goods')
-            ->view('goods_temp','goods_name', 'goods.order_id = goods_temp.order_id')
-            //  ->where('a.order_id'=='b.order_id')
+            ->view('goods_temp', 'goods_name', 'goods.order_id = goods_temp.order_id')
             ->select();
-        return $same;
+        // return $same;
         //更新语句
-        return $this->saveAll($same);
+        // return $this->saveAll($same);
 
         //删除临时表里的重复数据
         foreach ($same as $k => $v) {
-            Db::table('goods_temp')->where('id', $v['id'])->delete();
+            Db::table('goods')->where('order_id', $v['order_id'])->delete();
         }
-
+        // return true;
         /*插入新增数据*/
 
         //查询剩余数据
-        $data = Db::table('goods_temp')->select()->toArray();
+        $data = Db::table('goods_temp')->withoutField('id')->select()->toArray();
+        // return json($data);
         if (empty($data)) {
             //返回数据优化
             return '无新增';
@@ -159,7 +193,7 @@ class Goods extends Model
 
         //删除临时表里的剩余数据
         //FIXME:
-        $this->delete(true);
+        // $this->delete(true);
 
         // foreach ($data as $k => $v) {
         //     Db::table('goods_temp')->where('id', $v['id'])->delete();

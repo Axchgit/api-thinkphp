@@ -30,11 +30,11 @@ class Goods extends Base
     {
         $post =  request()->param();
         $goods_model = new GoodsModel();
-        $data = $goods_model->insertGoods($post);
-        if ($data) {
-            return $this->create('', '成功', 200);
+        $res = $goods_model->insertGoods($post);
+        if ($res === true) {
+            return $this->create('', '添加成功', 200);
         } else {
-            return $this->create('', '失败', 204);
+            return $this->create($res, $res, 204);
         }
     }
     /**
