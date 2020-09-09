@@ -52,6 +52,11 @@ class Admin extends Model
     {
 
         $admin_uuid = $this->where('admin_name',$name)->value('uuid');
+        if(!empty($admin_uuid)){
+            return Db::table('temp_code')->where('uuid',$admin_uuid)->delete();
+        }else{
+            return false;
+        }
         // $res = Db::table('temp_code')->where('uuid',$admin_uuid)->selectOrFail();
         // if($res){
         //     return Db::table('temp_code')->where('uuid',$admin_uuid)->delete();;
@@ -59,7 +64,6 @@ class Admin extends Model
         //     return true;
         // }        
         // 知识点:跨表数据库操作
-        return Db::table('temp_code')->where('uuid',$admin_uuid)->delete();
         // $admin->code = $log_code;
     }
 

@@ -61,7 +61,10 @@ class Login extends Base
         $log_code = $code + $time * 1000000;
         $admin_model = new AdminModel();
         //删除之前的登录码
-        $admin_model->deleteLogcode($post['username']);
+        $res = $admin_model->deleteLogcode($post['username']);
+        if(!$res){
+            return $this->create('', '找不到该用户,请检查用户名是否正确', 204);
+        }
         //保存登录码信息到临时表
         $res =  $admin_model->saveLogCode($post['username'], $log_code);
         //知识点:PHP类型转换
