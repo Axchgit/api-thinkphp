@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-04 02:33:40
+ * @LastEditTime: 2020-09-10 10:14:21
  * @LastEditors: xch
  * @Description: 员工信息
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Performance.php
@@ -85,7 +85,7 @@ class Performance extends Model
                     //     $data = $this->where($key, $value)->paginate($list_rows, $isSimple, $config);
                     //     break;
                 case 'goods_id':
-                    $data = $this->where($key, $value)->paginate($list_rows, $isSimple, $config);
+                    $data = $this->where('uuid', $uuid)->where($key, $value)->paginate($list_rows, $isSimple, $config);
                     break;
                 case 'audit_status':
                     $data = $this->where('uuid', $uuid)->where($key, $value)->paginate($list_rows, $isSimple, $config);

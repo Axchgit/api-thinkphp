@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2020-09-04 02:31:32
+ * @LastEditTime: 2020-09-10 10:47:07
  * @LastEditors: xch
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Employee.php
  * @Description: 
@@ -311,10 +311,21 @@ class Employee extends Base
     public function selectPerformanceGoodsByUuid(Request $request)
     {
         $post =  request()->param();
+        // return json($post);
+
+        // return $post;
         $res = $request->data;
         $per_model = new PerformanceModel();
-        $key = !empty($post['key']) ? $post['key'] : '';
-        $value = !empty($post['value']) ? $post['value'] : '';
+        $val = !empty($post['goods_id']) || !empty($post['audit_status']);
+        $key = '';
+        $value = '';
+        // return $val;
+        if($val){
+            $key = !empty($post['goods_id']) ? 'goods_id' : 'audit_status';
+            $value = $post[$key];
+        }
+
+        // $value = !empty($post['value']) ? $post['value'] : '';
         $list_rows = !empty($post['list_rows']) ? $post['list_rows'] : '';
         $data = $per_model->selectPerformanceGoods($res['data']->uuid, $key, $value, $list_rows, false, ['query' => $post]);
         if ($data) {

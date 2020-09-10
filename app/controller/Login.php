@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2020-08-24 01:58:33
+ * @LastEditTime: 2020-09-09 19:36:59
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Login.php
@@ -62,8 +62,8 @@ class Login extends Base
         $admin_model = new AdminModel();
         //删除之前的登录码
         $res = $admin_model->deleteLogcode($post['username']);
-        if(!$res){
-            return $this->create('', '找不到该用户,请检查用户名是否正确', 204);
+        if($res === false){
+            return $this->create('', '找不到该用户,请检查用户名是否正确'.$res, 204);
         }
         //保存登录码信息到临时表
         $res =  $admin_model->saveLogCode($post['username'], $log_code);

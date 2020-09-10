@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-08-21 15:06:11
+ * @LastEditTime: 2020-09-09 19:33:12
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Admin.php
@@ -50,6 +50,9 @@ class Admin extends Model
      */
     public function deleteLogcode($name)
     {
+        // try{
+
+        // }
 
         $admin_uuid = $this->where('admin_name',$name)->value('uuid');
         if(!empty($admin_uuid)){
