@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-08-21 15:05:40
+ * @LastEditTime: 2020-09-10 17:22:30
  * @LastEditors: xch
  * @Description: 员工信息
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Employee.php
@@ -19,6 +19,27 @@ use think\facade\Db;
 
 class Employee extends Model
 {
+    //员工查询业绩
+    public function getEmployeeInfo($key, $value, $list_rows = 10, $isSimple = false, $config = '')
+    {
+        switch ($key) {
+            case 'work_name':
+                $data = $this->where($key, $value)->paginate($list_rows, $isSimple, $config);
+                break;
+            case 'real_name':
+                $data = $this->where($key, $value)->paginate($list_rows, $isSimple, $config);
+                break;
+            case 'role':
+                $data = $this->whereLike($key,$value)->paginate($list_rows, $isSimple, $config);
+                break;
+            default:
+                $data = $this->paginate($list_rows, $isSimple, $config);        }
+        if (empty($data)) {
+            return false;
+        } else {
+            return $data;
+        }
+    }
 
     //获取员工信息,分页显示
     public function getEmpInfo($list_rows, $isSimple = false, $config)
@@ -80,9 +101,9 @@ class Employee extends Model
         }
     }
 
-    public function saveEmpCode($work_num, $time_code,$msg = '验证码')
+    public function saveEmpCode($work_num, $time_code, $msg = '验证码')
     {
-        $emp_uuid = $this->where('work_num',$work_num)->value('uuid');        
+        $emp_uuid = $this->where('work_num', $work_num)->value('uuid');
         $data = [
             'uuid' => $emp_uuid,
             'code' => $time_code,
@@ -94,8 +115,7 @@ class Employee extends Model
     }
     public function deleteEmpCode($work_num)
     {
-        $emp_uuid = $this->where('work_num',$work_num)->value('uuid');
-        return Db::table('temp_code')->where('uuid',$emp_uuid)->delete();
+        $emp_uuid = $this->where('work_num', $work_num)->value('uuid');
+        return Db::table('temp_code')->where('uuid', $emp_uuid)->delete();
     }
-
 }

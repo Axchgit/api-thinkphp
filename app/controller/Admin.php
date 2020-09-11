@@ -2,9 +2,9 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2020-09-10 15:41:11
+ * @LastEditTime: 2020-09-10 18:11:30
  * @LastEditors: xch
- * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Employee.php
+ * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Admin.php
  * @Description: 
  */
 
@@ -20,18 +20,20 @@ use app\model\Performance as PerformanceModel;
 
 use think\facade\Db;
 
-class Employee extends Base
+class Admin extends Base
 {
     /**
      * 显示资源列表
      *
      * @return \think\Response
      */
-    public function selectAll()
+    public function selectEmployee()
     {
         $post = request()->param();
         $emp_model = new EmployeeModel();
-        $list = $emp_model->getEmpInfo($post['list_rows'], '', ['query' => $post]);
+        $key = !empty($post['key']) ? $post['key'] : '';
+        $value = !empty($post['value']) ? $post['value'] : '';
+        $list = $emp_model->getEmployeeInfo($key,$value,$post['list_rows'], false, ['query' => $post]);
         if ($list) {
             return $this->create($list, '查询成功');
         } else {
@@ -43,7 +45,7 @@ class Employee extends Base
      * @param {type} 
      * @return {type} 
      */
-    public function selectByInfo($work_num = '', $real_name = '')
+    public function selectEmpByInfo($work_num = '', $real_name = '')
     {
         $emp_model = new EmployeeModel();
         $data = $emp_model->getEmpByWrokNum($work_num, $real_name);
@@ -61,7 +63,7 @@ class Employee extends Base
      * @param {type} 
      * @return {type} 
      */
-    public function selectByRole()
+    public function selectEmpByRole()
     {
         $post = request()->param();
         $emp_model = new EmployeeModel();

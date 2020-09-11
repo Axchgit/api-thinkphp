@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:15:58
- * @LastEditTime: 2020-09-04 02:33:12
+ * @LastEditTime: 2020-09-10 17:28:30
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\route\app.php
@@ -42,6 +42,12 @@ Route::group('login', function () {
     Route::rule('checkEmplogin', 'checkEmpLogin')->allowCrossDomain();
     Route::rule('selectempinfo', 'selectEmpInfo')->middleware('checkrequest', 5)->allowCrossDomain();
 })->completeMatch()->prefix('Login/');
+/********管理员 */
+Route::group('admin', function () {
+    Route::post('selectEmployee', 'selectEmployee')->middleware('checkrequest', 1)->allowCrossDomain();
+    // Route::post('selectGoods', 'selectGoods')->middleware('checkrequest', 1)->allowCrossDomain();
+})->completeMatch()->prefix('Admin/');
+
 /****员工*****/
 // Route::resource('employee','Employee');
 Route::group('employee', function () {
