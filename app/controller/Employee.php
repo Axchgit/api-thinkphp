@@ -2,8 +2,8 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2020-09-10 15:41:11
- * @LastEditors: xch
+ * @LastEditTime: 2020-09-12 12:24:49
+ * @LastEditors: Chenhao Xing
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Employee.php
  * @Description: 
  */
@@ -16,118 +16,18 @@ use think\Request;
 
 use app\model\Employee as EmployeeModel;
 use app\model\EmployeeLogin as EmpLoginModel;
+use app\model\EmployeeLeave as EmpLeaveModel;
+use app\model\EmployeeQuit as EmpQuitModel;
+
 use app\model\Performance as PerformanceModel;
 
 use think\facade\Db;
 
 class Employee extends Base
 {
-    /**
-     * 显示资源列表
-     *
-     * @return \think\Response
-     */
-    public function selectAll()
-    {
-        $post = request()->param();
-        $emp_model = new EmployeeModel();
-        $list = $emp_model->getEmpInfo($post['list_rows'], '', ['query' => $post]);
-        if ($list) {
-            return $this->create($list, '查询成功');
-        } else {
-            return $this->create($list, '暂无数据', 204);
-        }
-    }
-    /**
-     * @description: 通过工号查询员工数据
-     * @param {type} 
-     * @return {type} 
-     */
-    public function selectByInfo($work_num = '', $real_name = '')
-    {
-        $emp_model = new EmployeeModel();
-        $data = $emp_model->getEmpByWrokNum($work_num, $real_name);
-        $list = [
-            'data' => $data
-        ];
-        if ($list) {
-            return $this->create($list, '查询成功');
-        } else {
-            return $this->create($list, '暂无数据', 204);
-        }
-    }
-    /**
-     * @description: 通过权限等级查询员工数据
-     * @param {type} 
-     * @return {type} 
-     */
-    public function selectByRole()
-    {
-        $post = request()->param();
-        $emp_model = new EmployeeModel();
-        $data = $emp_model->getEmpByRole($post['list_rows'], '', ['query' => $post], $post['role']);
-        if ($data) {
-            return $this->create($data, '查询成功');
-        } else {
-            return $this->create($data, '暂无数据', 204);
-        }
-    }
 
 
-    /***************** 员工账户信息 ********************/
 
-
-    /**
-     * @description: 获取员工资料信息
-     * @param {type} 
-     * @return {type} 
-     */
-    public function selectAcAll()
-    {
-        $post = request()->param();
-        $emplogin_model = new EmpLoginModel();
-        $list = $emplogin_model->getEmpAc($post['list_rows'], '', ['query' => $post]);
-        if ($list) {
-            return $this->create($list, '查询成功');
-        } else {
-            return $this->create($list, '暂无数据', 204);
-        }
-    }
-    /**
-     * @description: 通过昵称查询员工数据
-     * @param {type} 
-     * @return {type} 
-     */
-    public function selectAcByName($nick_name = '')
-    {
-        $emplogin_model = new EmpLoginModel();
-        $data = $emplogin_model->getEmpAcByName($nick_name);
-        // return $data;
-        $list = [
-            'data' => $data
-        ];
-        if ($data) {
-            return $this->create($list, '查询成功');
-        } else {
-            return $this->create($list, '暂无数据', 204);
-        }
-    }
-    /**
-     * @description: 通过权限等级查询员工资料
-     * @param {type} 
-     * @return {type} 
-     */
-    public function selectAcByRole()
-    {
-        $post = request()->param();
-        $emplogin_model = new EmpLoginModel();
-        $data = $emplogin_model->getEmpAcByRole($post['list_rows'], '', ['query' => $post], $post['role']);
-        if ($data) {
-            return $this->create($data, '查询成功');
-        } else {
-            return $this->create($data, '暂无数据', 204);
-        }
-    }
     //忘记密码-发送验证码
     public function sendRecoverCode()
     {
@@ -322,8 +222,8 @@ class Employee extends Base
         // 判断是否有查询条件
         $is_defined = !empty($post['goods_id']) || !empty($post['audit_status']);
         $is_all_derfined = !empty($post['goods_id']) && !empty($post['audit_status']);
-        if($is_defined){
-            if($is_all_derfined){
+        if ($is_defined) {
+            if ($is_all_derfined) {
                 return $this->create('', '暂时不支持同时查询', 204);
             }
             $key = !empty($post['goods_id']) ? 'goods_id' : 'audit_status';
@@ -339,6 +239,49 @@ class Employee extends Base
         }
     }
 
+    /*************************员工动态 */
+    //员工请假
+    public function selectEmployeeLeaveByUuid(Request $request)
+    {
+        $post = request()->param();
+        $res = $request->data;
+        // return json($res);
+        $emp_leave_model = new EmpLeaveModel();
+        $key = !empty($post['key']) ? $post['key'] : '';
+        $value = !empty($post['value']) ? $post['value'] : '';
+        $list = $emp_leave_model->getEmployeeLeaveByUuid($res['data']->uuid, $key, $value, $post['list_rows'], false, ['query' => $post]);
+        if ($list) {
+            return $this->create($list, '查询成功');
+        } else {
+            return $this->create($list, '暂无数据', 204);
+        }
+    }
+    //添加请假请求
+    public function addEmployeeLeave(Request $request)
+    {
+        $post = request()->param();
+        $res = $request->data;
+        $post['uuid'] = $res['data']->uuid;
+        $emp_leave_model = new EmpLeaveModel();
+        $res = $emp_leave_model->saveEmployeeLeave($post);
+        if ($res === true) {
+            return $this->create('', '添加成功', 200);
+        } else {
+            return $this->create($res, '添加失败', 204);
+        }
+    }
+    //员工撤回请假请求
+    public function recallEmployeeLeave(Request $request){
+        $post = request()->param();
+        $res = $request->data;
+        $emp_leave_model = new EmpLeaveModel();
+        $res = $emp_leave_model->deleteEmployeeLeave($res['data']->uuid,$post['id']);
+        if ($res === true) {
+            return $this->create('', '删除成功', 200);
+        } else {
+            return $this->create($res, '删除失败', 204);
+        }
+    }
 
 
 
@@ -346,6 +289,148 @@ class Employee extends Base
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /********************************old管理员操作 */
+    /**
+     * 显示资源列表
+     *
+     * @return \think\Response
+     */
+    public function selectAll()
+    {
+        $post = request()->param();
+        $emp_model = new EmployeeModel();
+        $list = $emp_model->getEmpInfo($post['list_rows'], '', ['query' => $post]);
+        if ($list) {
+            return $this->create($list, '查询成功');
+        } else {
+            return $this->create($list, '暂无数据', 204);
+        }
+    }
+    /**
+     * @description: 通过工号查询员工数据
+     * @param {type} 
+     * @return {type} 
+     */
+    public function selectByInfo($work_num = '', $real_name = '')
+    {
+        $emp_model = new EmployeeModel();
+        $data = $emp_model->getEmpByWrokNum($work_num, $real_name);
+        $list = [
+            'data' => $data
+        ];
+        if ($list) {
+            return $this->create($list, '查询成功');
+        } else {
+            return $this->create($list, '暂无数据', 204);
+        }
+    }
+    /**
+     * @description: 通过权限等级查询员工数据
+     * @param {type} 
+     * @return {type} 
+     */
+    public function selectByRole()
+    {
+        $post = request()->param();
+        $emp_model = new EmployeeModel();
+        $data = $emp_model->getEmpByRole($post['list_rows'], '', ['query' => $post], $post['role']);
+        if ($data) {
+            return $this->create($data, '查询成功');
+        } else {
+            return $this->create($data, '暂无数据', 204);
+        }
+    }
+
+
+    /***************** 员工账户信息 ********************/
+
+
+    /**
+     * @description: 获取员工资料信息
+     * @param {type} 
+     * @return {type} 
+     */
+    public function selectAcAll()
+    {
+        $post = request()->param();
+        $emplogin_model = new EmpLoginModel();
+        $list = $emplogin_model->getEmpAc($post['list_rows'], '', ['query' => $post]);
+        if ($list) {
+            return $this->create($list, '查询成功');
+        } else {
+            return $this->create($list, '暂无数据', 204);
+        }
+    }
+    /**
+     * @description: 通过昵称查询员工数据
+     * @param {type} 
+     * @return {type} 
+     */
+    public function selectAcByName($nick_name = '')
+    {
+        $emplogin_model = new EmpLoginModel();
+        $data = $emplogin_model->getEmpAcByName($nick_name);
+        // return $data;
+        $list = [
+            'data' => $data
+        ];
+        if ($data) {
+            return $this->create($list, '查询成功');
+        } else {
+            return $this->create($list, '暂无数据', 204);
+        }
+    }
+    /**
+     * @description: 通过权限等级查询员工资料
+     * @param {type} 
+     * @return {type} 
+     */
+    public function selectAcByRole()
+    {
+        $post = request()->param();
+        $emplogin_model = new EmpLoginModel();
+        $data = $emplogin_model->getEmpAcByRole($post['list_rows'], '', ['query' => $post], $post['role']);
+        if ($data) {
+            return $this->create($data, '查询成功');
+        } else {
+            return $this->create($data, '暂无数据', 204);
+        }
+    }
+
+    /*********************************/
 
     //结束
 }

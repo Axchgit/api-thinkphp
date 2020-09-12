@@ -2,8 +2,8 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-08-24 01:57:04
- * @LastEditors: xch
+ * @LastEditTime: 2020-09-12 02:49:07
+ * @LastEditors: Chenhao Xing
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\EmployeeLogin.php
  */
@@ -15,10 +15,70 @@ namespace app\model;
 // use think\Db;
 use think\Model;
 use think\facade\Db;
+use app\model\Employee as EmployeeModel;
 
 
 class EmployeeLogin extends Model
 {
+    //员工查询业绩
+    public function getEmployeeAccount($key, $value, $list_rows = 10, $isSimple = false, $config = '')
+    {
+        switch ($key) {
+            case 'nick_name':
+                $data = Db::view('employee_login', 'id,uuid,nick_name,password,profile,create_time')
+                    ->view('employee', 'work_num,real_name,role', 'employee_login.uuid = employee.uuid')
+                    ->where($key, $value)
+                    ->paginate($list_rows, $isSimple, $config);
+                break;
+            case 'work_num':
+                $data = Db::view('employee_login', 'id,uuid,nick_name,password,profile,create_time')
+                    ->view('employee', 'work_num,real_name,role', 'employee_login.uuid = employee.uuid')
+                    ->where($key, $value)
+                    ->paginate($list_rows, $isSimple, $config);
+                break;
+            default:
+                $data = Db::view('employee_login', 'id,uuid,nick_name,password,profile,create_time')
+                    ->view('employee', 'work_num,real_name,role', 'employee_login.uuid = employee.uuid')
+                    ->where($key, $value)
+                    ->paginate($list_rows, $isSimple, $config);
+        }
+        if (empty($data[0])) {
+            return false;
+        } else {
+            return $data;
+        }
+    }
+        // 修改人员信息
+        public function updateEmployeeAccount($data)
+        {
+            try {
+                $this->update($data);
+                return true;
+            } catch (\Exception $e) {
+                return $e;
+            }
+            // $res = $this->save($data);
+        }
+    
+        // 删除人员信息
+        public function deleteEmployeeAccount($id)
+        {
+            try {
+                //软删除
+                $uuid = $this->where('id',$id)->value('uuid');
+                $this->destroy($id);
+                //更新账户激活状态
+                $emp_model = new EmployeeModel();
+                $employee = $emp_model->where('uuid',$uuid)->find();
+                $employee->review_status = 0;
+                $employee->save();
+                return true;
+            } catch (\Exception $e) {
+                return $e;
+            }
+            // $res = $this->save($data);
+        }
+
     /**
      * @description: 员工登录验证
      * @param {type} 
@@ -87,18 +147,20 @@ class EmployeeLogin extends Model
         }
     }
 
-    public function getAcInfo($emp_uuid){
+    public function getAcInfo($emp_uuid)
+    {
         return $this->where('uuid', $emp_uuid)->select();
-
     }
 
-    public function updatePW($uuid,$new_password){
-        $emp =  $this->where('uuid',$uuid)->find();
+    public function updatePW($uuid, $new_password)
+    {
+        $emp =  $this->where('uuid', $uuid)->find();
         $emp->password = $new_password;
         return $emp->save();
     }
 
-    public function insertEmpAc($post){
-        return $this->allowField(['nick_name','password','profile','uuid'])->save($post);
+    public function insertEmpAc($post)
+    {
+        return $this->allowField(['nick_name', 'password', 'profile', 'uuid'])->save($post);
     }
 }

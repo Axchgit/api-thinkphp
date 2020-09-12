@@ -2,8 +2,8 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2020-09-10 18:11:30
- * @LastEditors: xch
+ * @LastEditTime: 2020-09-12 02:38:29
+ * @LastEditors: Chenhao Xing
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Admin.php
  * @Description: 
  */
@@ -22,24 +22,63 @@ use think\facade\Db;
 
 class Admin extends Base
 {
-    /**
-     * 显示资源列表
-     *
-     * @return \think\Response
-     */
+    //员工个人信息查询
     public function selectEmployee()
     {
         $post = request()->param();
         $emp_model = new EmployeeModel();
         $key = !empty($post['key']) ? $post['key'] : '';
         $value = !empty($post['value']) ? $post['value'] : '';
-        $list = $emp_model->getEmployeeInfo($key,$value,$post['list_rows'], false, ['query' => $post]);
+        $list = $emp_model->getEmployeeInfo($key, $value, $post['list_rows'], false, ['query' => $post]);
         if ($list) {
             return $this->create($list, '查询成功');
         } else {
             return $this->create($list, '暂无数据', 204);
         }
     }
+    //员工账户信息查询
+    public function selectEmployeeAccount()
+    {
+        $post = request()->param();
+        $emplogin_model = new EmpLoginModel();
+        $key = !empty($post['key']) ? $post['key'] : '';
+        $value = !empty($post['value']) ? $post['value'] : '';
+        $list = $emplogin_model->getEmployeeAccount($key, $value, $post['list_rows'], false, ['query' => $post]);
+        if ($list) {
+            return $this->create($list, '查询成功');
+        } else {
+            return $this->create($list, '暂无数据', 204);
+        }
+    }
+
+    //修改员工账户信息
+    public function updateEmployeeAccount()
+    {
+        $post =  request()->param();
+        $emplogin_model = new EmpLoginModel();
+        $res = $emplogin_model->updateEmployeeAccount($post);
+        if ($res === true) {
+            return $this->create('', '修改成功', 200);
+        } else {
+            return $this->create('', $res, 204);
+        }
+    }
+
+    //删除员工账户信息
+    public function deleteEmployeeAccount()
+    {
+        $post =  request()->param();
+        $emplogin_model = new EmpLoginModel();
+        $res = $emplogin_model->deleteEmployeeAccount($post['id']);
+        if ($res === true) {
+            return $this->create('', '账户信息删除成功', 200);
+        } else {
+            return $this->create('', $res, 204);
+        }
+    }
+
+
+    /**********************************旧版信息查询 */
     /**
      * @description: 通过工号查询员工数据
      * @param {type} 
@@ -324,8 +363,8 @@ class Admin extends Base
         // 判断是否有查询条件
         $is_defined = !empty($post['goods_id']) || !empty($post['audit_status']);
         $is_all_derfined = !empty($post['goods_id']) && !empty($post['audit_status']);
-        if($is_defined){
-            if($is_all_derfined){
+        if ($is_defined) {
+            if ($is_all_derfined) {
                 return $this->create('', '暂时不支持同时查询', 204);
             }
             $key = !empty($post['goods_id']) ? 'goods_id' : 'audit_status';

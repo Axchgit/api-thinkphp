@@ -2,8 +2,8 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-10 17:22:30
- * @LastEditors: xch
+ * @LastEditTime: 2020-09-12 02:11:10
+ * @LastEditors: Chenhao Xing
  * @Description: 员工信息
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Employee.php
  */
@@ -19,7 +19,7 @@ use think\facade\Db;
 
 class Employee extends Model
 {
-    //员工查询业绩
+    //查询员工个人信息
     public function getEmployeeInfo($key, $value, $list_rows = 10, $isSimple = false, $config = '')
     {
         switch ($key) {
@@ -34,7 +34,7 @@ class Employee extends Model
                 break;
             default:
                 $data = $this->paginate($list_rows, $isSimple, $config);        }
-        if (empty($data)) {
+        if (empty($data[0])) {
             return false;
         } else {
             return $data;
