@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-13 15:25:38
+ * @LastEditTime: 2020-09-13 23:10:29
  * @LastEditors: Chenhao Xing
  * @Description: 员工信息
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Employee.php
@@ -42,7 +42,7 @@ class Feedback extends Model
         }
     }
 
-    //添加leave
+    //添加反馈
     public function saveFeedback($data)
     {
 

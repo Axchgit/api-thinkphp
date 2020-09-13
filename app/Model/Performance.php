@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-13 18:10:59
+ * @LastEditTime: 2020-09-13 23:13:56
  * @LastEditors: Chenhao Xing
  * @Description: 员工信息
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Performance.php
@@ -152,6 +152,18 @@ class Performance extends Model
             return $data;
         }
     }
+
+    //修改/审核业绩
+    public function updatePerformance($data)
+    {
+        try {
+            $this->update($data);
+            return true;
+        } catch (\Exception $e) {
+            return $e;
+        }
+    }
+
 
 
 

@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:15:58
- * @LastEditTime: 2020-09-13 17:02:12
+ * @LastEditTime: 2020-09-13 23:14:42
  * @LastEditors: Chenhao Xing
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\route\app.php
@@ -52,6 +52,8 @@ Route::group('admin', function () {
     Route::post('deleteEmployeeAccount', 'deleteEmployeeAccount')->middleware('checkrequest', 1)->allowCrossDomain();
     //业绩
     Route::post('selectPerformance', 'selectPerformance')->middleware('checkrequest', 1)->allowCrossDomain();
+    Route::post('reviewPerformance', 'reviewPerformance')->middleware('checkrequest', 1)->allowCrossDomain();
+
 
 
     
@@ -78,7 +80,7 @@ Route::group('employee', function () {
     Route::post('updateAcPW', 'updateAcPW')->allowCrossDomain();
     Route::post('createEmpAc', 'createEmpAc')->allowCrossDomain();
     /***********员工业绩******/
-    Route::post('submitPerformanc', 'submitPerformanc')->middleware('checkrequest', 5)->allowCrossDomain();
+    Route::post('submitPerformancByUuid', 'submitPerformancByUuid')->middleware('checkrequest', 5)->allowCrossDomain();
     Route::get('selectPerformanceByUuid', 'selectPerformanceByUuid')->middleware('checkrequest', 5)->allowCrossDomain();
     Route::get('selectPerformanceGoodsByUuid', 'selectPerformanceGoodsByUuid')->middleware('checkrequest', 5)->allowCrossDomain();
     Route::post('deletePerformanceByUuuid', 'deletePerformanceByUuuid')->middleware('checkrequest', 5)->allowCrossDomain();
