@@ -2,8 +2,8 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2020-09-09 19:36:59
- * @LastEditors: xch
+ * @LastEditTime: 2020-09-13 02:37:41
+ * @LastEditors: Chenhao Xing
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Login.php
  */
@@ -53,9 +53,9 @@ class Login extends Base
     public function sendAdminCode()
     {
         $post =  request()->param();
-        //知识点:PHP获得随机数
+        //PHP获得随机数
         $code = rand(111111, 999999);
-        //知识点:PHP获取时间戳
+        //PHP获取时间戳
         $time = time();
         //拼接时间戳与登录码
         $log_code = $code + $time * 1000000;
@@ -67,10 +67,7 @@ class Login extends Base
         }
         //保存登录码信息到临时表
         $res =  $admin_model->saveLogCode($post['username'], $log_code);
-        //知识点:PHP类型转换
         $string_code = (string)$log_code;
-        //     //知识点:字符串截取指定片段
-        //TODO:优化逻辑:$code重复
         $code = substr($string_code, 10, 6);
         //查询账户对应email
         $admin_email = $admin_model->selectMail($post['username']);

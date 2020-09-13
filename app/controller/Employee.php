@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2020-09-12 12:24:49
+ * @LastEditTime: 2020-09-13 15:24:02
  * @LastEditors: Chenhao Xing
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Employee.php
  * @Description: 
@@ -18,6 +18,8 @@ use app\model\Employee as EmployeeModel;
 use app\model\EmployeeLogin as EmpLoginModel;
 use app\model\EmployeeLeave as EmpLeaveModel;
 use app\model\EmployeeQuit as EmpQuitModel;
+use app\model\Feedback as FeedbackModel;
+
 
 use app\model\Performance as PerformanceModel;
 
@@ -271,11 +273,55 @@ class Employee extends Base
         }
     }
     //员工撤回请假请求
-    public function recallEmployeeLeave(Request $request){
+    public function recallEmployeeLeave(Request $request)
+    {
         $post = request()->param();
         $res = $request->data;
         $emp_leave_model = new EmpLeaveModel();
-        $res = $emp_leave_model->deleteEmployeeLeave($res['data']->uuid,$post['id']);
+        $res = $emp_leave_model->deleteEmployeeLeaveByid($res['data']->uuid, $post['id']);
+        if ($res === true) {
+            return $this->create('', '删除成功', 200);
+        } else {
+            return $this->create($res, '删除失败', 204);
+        }
+    }
+    //员工离职
+    public function selectEmployeeQuitByUuid(Request $request)
+    {
+        $post = request()->param();
+        $res = $request->data;
+        // return json($res);
+        $emp_quit_model = new EmpQuitModel();
+        $key = !empty($post['key']) ? $post['key'] : '';
+        $value = !empty($post['value']) ? $post['value'] : '';
+        $list = $emp_quit_model->getEmployeeQuitByUuid($res['data']->uuid, $key, $value, $post['list_rows'], false, ['query' => $post]);
+        if ($list) {
+            return $this->create($list, '查询成功');
+        } else {
+            return $this->create($list, '暂无数据', 200);
+        }
+    }
+    //添加离职请求
+    public function addEmployeeQuit(Request $request)
+    {
+        $post = request()->param();
+        $res = $request->data;
+        $post['uuid'] = $res['data']->uuid;
+        $emp_quit_model = new EmpQuitModel();
+        $res = $emp_quit_model->saveEmployeeQuit($post);
+        if ($res === true) {
+            return $this->create('', '添加成功', 200);
+        } else {
+            return $this->create($res, '添加失败', 204);
+        }
+    }
+    //员工撤回请假请求
+    public function recallEmployeeQuit(Request $request)
+    {
+        $post = request()->param();
+        $res = $request->data;
+        $emp_quit_model = new EmpQuitModel();
+        $res = $emp_quit_model->deleteEmployeeQuitByid($res['data']->uuid, $post['id']);
         if ($res === true) {
             return $this->create('', '删除成功', 200);
         } else {
@@ -283,7 +329,52 @@ class Employee extends Base
         }
     }
 
+    /************************员工反馈 */
 
+    public function selectFeedbackByUuid(Request $request)
+    {
+        $post = request()->param();
+        $res = $request->data;
+        // return json($res);
+        $feedback_model = new FeedbackModel();
+        $key = !empty($post['key']) ? $post['key'] : '';
+        $value = !empty($post['value']) ? $post['value'] : '';
+        $list = $feedback_model->getFeedbackByUuid($res['data']->uuid, $key, $value, $post['list_rows'], false, ['query' => $post]);
+        if ($list) {
+            return $this->create($list, '查询成功');
+        } else {
+            return $this->create($list, '暂无数据', 200);
+        }
+    }
+
+    //添加或修改反馈
+    public function addFeedback(Request $request)
+    {
+        $post = request()->param();
+        $res = $request->data;
+        $post['uuid'] = $res['data']->uuid;
+        $feedback_model = new FeedbackModel();
+        $res = $feedback_model->saveFeedback($post);
+        if ($res === true) {
+            return $this->create('', '添加成功', 200);
+        } else {
+            return $this->create($res, '添加失败', 204);
+        }
+    }
+
+    //员工撤回反馈
+    public function recallFeedback(Request $request)
+    {
+        $post = request()->param();
+        $res = $request->data;
+        $feedback_model = new FeedbackModel();
+        $res = $feedback_model->deleteFeedbackByid($res['data']->uuid, $post['id']);
+        if ($res === true) {
+            return $this->create('', '删除成功', 200);
+        } else {
+            return $this->create($res, '删除失败', 204);
+        }
+    }
 
 
 

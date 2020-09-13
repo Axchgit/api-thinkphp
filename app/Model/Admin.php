@@ -39,7 +39,7 @@ class Admin extends Model
             'code' => $log_code,
             'msg' => '登录码'
         ];
-        //知识点:跨表数据库操作
+        //跨表数据库操作
         return Db::table('temp_code')->insert($data);
         // $admin->code = $log_code;
     }

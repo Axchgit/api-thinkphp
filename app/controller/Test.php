@@ -2,8 +2,8 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2020-09-04 19:36:32
- * @LastEditors: xch
+ * @LastEditTime: 2020-09-13 02:37:47
+ * @LastEditors: Chenhao Xing
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Test.php
  */
@@ -174,14 +174,6 @@ class Test extends Base
             $code = 204;
             $msg = '找不到收件人';
         }
-        //知识点:PHP类型转换
-        // $string_code = (string)$log_code;
-        // $data = [
-        //     'log_code' => $log_code,
-        //     //知识点:字符串截取指定片段
-        //     'code' => substr($string_code,10,6),  //截取出登录码
-        //     'res' => $res
-        // ];
         $data = [
             'code' => $code,
             'msg' => $msg,

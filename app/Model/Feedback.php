@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-13 11:57:20
+ * @LastEditTime: 2020-09-13 15:25:38
  * @LastEditors: Chenhao Xing
  * @Description: 员工信息
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Employee.php
@@ -18,12 +18,12 @@ use think\facade\Db;
 use think\model\concern\SoftDelete;
 
 
-class EmployeeLeave extends Model
+class Feedback extends Model
 {
     use SoftDelete;
     protected $deleteTime = 'delete_time';
     //员工查询业绩
-    public function getEmployeeLeaveByUuid($uuid, $key, $value, $list_rows = 10, $isSimple = false, $config = '')
+    public function getFeedbackByUuid($uuid, $key, $value, $list_rows = 10, $isSimple = false, $config = '')
     {
         switch ($key) {
             case 'review_satatus':
@@ -43,10 +43,15 @@ class EmployeeLeave extends Model
     }
 
     //添加leave
-    public function saveEmployeeLeave($data)
+    public function saveFeedback($data)
     {
+
         try {
-            $this->save($data);
+            if(!empty($data['id'])){
+                $this->update($data);
+            }else{
+                $this->save($data);
+            }
             return true;
         } catch (\Exception $e) {
             return $e;
@@ -54,12 +59,12 @@ class EmployeeLeave extends Model
     }
 
     // 删除人员信息
-    public function deleteEmployeeLeaveByid($uuid, $id)
+    public function deleteFeedbackByid($uuid, $id)
     {
         try {
-            $review_status = $this->where('uuid', $uuid)->where('id', $id)->value('review_status');
-            if ($review_status == 2) {
-                return '不能删除已通过审核数据';
+            $process_status = $this->where('uuid', $uuid)->where('id', $id)->value('process_status');
+            if ($process_status == 2) {
+                return '不能删除已处理数据';
             }
             //软删除
             $this->destroy($id);

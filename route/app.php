@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:15:58
- * @LastEditTime: 2020-09-12 12:52:03
+ * @LastEditTime: 2020-09-13 14:58:24
  * @LastEditors: Chenhao Xing
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\route\app.php
@@ -77,6 +77,18 @@ Route::group('employee', function () {
     /**********员工动态 */
     Route::get('selectEmployeeLeaveByUuid', 'selectEmployeeLeaveByUuid')->middleware('checkrequest', 5)->allowCrossDomain();
     Route::post('addEmployeeLeave', 'addEmployeeLeave')->middleware('checkrequest', 5)->allowCrossDomain();
+    Route::post('recallEmployeeLeave', 'recallEmployeeLeave')->middleware('checkrequest', 5)->allowCrossDomain();
+
+    Route::get('selectEmployeeQuitByUuid', 'selectEmployeeQuitByUuid')->middleware('checkrequest', 5)->allowCrossDomain();
+    Route::post('addEmployeeQuit', 'addEmployeeQuit')->middleware('checkrequest', 5)->allowCrossDomain();
+    Route::post('recallEmployeeQuit', 'recallEmployeeQuit')->middleware('checkrequest', 5)->allowCrossDomain();
+
+    /**********员工信息反馈 */
+    Route::get('selectFeedbackByUuid', 'selectFeedbackByUuid')->middleware('checkrequest', 5)->allowCrossDomain();
+    Route::post('addFeedback', 'addFeedback')->middleware('checkrequest', 5)->allowCrossDomain();
+    Route::post('recallFeedback', 'recallFeedback')->middleware('checkrequest', 5)->allowCrossDomain();
+
+
 
 
 })->completeMatch()->prefix('Employee/');

@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-12 02:11:10
+ * @LastEditTime: 2020-09-13 02:34:15
  * @LastEditors: Chenhao Xing
  * @Description: 员工信息
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Employee.php
@@ -109,7 +109,7 @@ class Employee extends Model
             'code' => $time_code,
             'msg' => $msg
         ];
-        //知识点:跨表数据库操作
+        //跨表数据库操作
         return Db::table('temp_code')->insert($data);
         // $admin->code = $log_code;
     }
