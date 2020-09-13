@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2020-09-14 02:11:07
+ * @LastEditTime: 2020-09-14 02:57:33
  * @LastEditors: Chenhao Xing
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Admin.php
  * @Description: 
@@ -19,6 +19,8 @@ use app\model\EmployeeLogin as EmpLoginModel;
 use app\model\Performance as PerformanceModel;
 use app\model\EmployeeLeave as EmployeeLeaveModel;
 use app\model\EmployeeQuit as EmployeeQuitModel;
+use app\model\Feedback as FeedbackModel;
+
 
 
 
@@ -179,6 +181,41 @@ class Admin extends Base
             return $this->create('', $res, 204);
         }
     }
+
+
+        /****************反馈处理 */
+    //查找所有业绩信息
+    public function selectFeedback()
+    {
+        $post = request()->param();
+        $feedback_model = new FeedbackModel();
+        $key = !empty($post['key']) ? $post['key'] : '';
+        $value = !empty($post['value']) ? $post['value'] : '';
+        $list = $feedback_model->getFeedback($key, $value, $post['list_rows'], false, ['query' => $post]);
+        if ($list) {
+            return $this->create($list, '查询成功');
+        } else {
+            return $this->create($list, '暂无数据', 204);
+        }
+    }
+
+    //审核业绩
+    public function reviewFeedback(Request $request)
+    {
+        $post =  request()->param();
+        $mid_res = $request->data;
+        $feedback_model = new FeedbackModel();
+        $emp_model = new EmployeeModel();
+        $handler = $emp_model->where('uuid', $mid_res['data']->uuid)->value('work_num');
+        $post['handler'] = $handler;
+        $res = $feedback_model->updateFeedback($post);
+        if ($res === true) {
+            return $this->create('', '修改成功', 200);
+        } else {
+            return $this->create('', $res, 204);
+        }
+    }
+
 
 
 
