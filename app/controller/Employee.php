@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2020-09-13 15:24:02
+ * @LastEditTime: 2020-09-13 16:53:31
  * @LastEditors: Chenhao Xing
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Employee.php
  * @Description: 
@@ -165,12 +165,12 @@ class Employee extends Base
     }
 
     //提交业绩
-    public function submitPerformanc(Request $request)
+    public function submitPerformancByUuid(Request $request)
     {
         $post = request()->param();
         $res = $request->data;
         $performance_model = new PerformanceModel();
-        $res = $performance_model->insertPerformance($res['data']->uuid, $post['goods_id']);
+        $res = $performance_model->insertPerformanceByUuid($res['data']->uuid, $post['goods_id']);
         if ($res === true) {
             return $this->create('', '添加成功', 200);
         } else {
@@ -187,7 +187,7 @@ class Employee extends Base
         $key = !empty($post['key']) ? $post['key'] : '';
         $value = !empty($post['value']) ? $post['value'] : '';
         $list_rows = !empty($post['list_rows']) ? $post['list_rows'] : '';
-        $data = $per_model->selectPerformance($res['data']->uuid, $key, $value, $list_rows, false, ['query' => $post]);
+        $data = $per_model->getPerformanceByUuid($res['data']->uuid, $key, $value, $list_rows, false, ['query' => $post]);
         if ($data) {
             return $this->create($data, '查询成功');
         } else {
@@ -196,12 +196,12 @@ class Employee extends Base
     }
 
     //员工删除个人业绩
-    public function deletePerformanceByUuuid(Request $request)
+    public function deletePerformanceByUuid(Request $request)
     {
         $post =  request()->param();
         $res = $request->data;
         $per_model = new PerformanceModel();
-        $res = $per_model->softDeletePerformance($res['data']->uuid, $post['id']);
+        $res = $per_model->softDeletePerformanceByUuid($res['data']->uuid, $post['id']);
         if ($res === true) {
             return $this->create('', '删除成功', 200);
         } else {
@@ -233,7 +233,7 @@ class Employee extends Base
         }
         // $value = !empty($post['value']) ? $post['value'] : '';
         $list_rows = !empty($post['list_rows']) ? $post['list_rows'] : '';
-        $data = $per_model->selectPerformanceGoods($res['data']->uuid, $key, $value, $list_rows, false, ['query' => $post]);
+        $data = $per_model->getPerformanceGoodsByUuid($res['data']->uuid, $key, $value, $list_rows, false, ['query' => $post]);
         if ($data) {
             return $this->create($data, '查询成功');
         } else {

@@ -2,8 +2,8 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-10 16:34:21
- * @LastEditors: xch
+ * @LastEditTime: 2020-09-13 18:10:59
+ * @LastEditors: Chenhao Xing
  * @Description: 员工信息
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Performance.php
  */
@@ -24,7 +24,36 @@ class Performance extends Model
     // use SoftDelete;
     // protected $deleteTime = 'delete_time';
 
-    public function insertPerformance($uuid, $goods_id)
+    //管理员查询业绩
+    public function getPerformance($key, $value, $list_rows = 10, $isSimple = false, $config = '')
+    {
+        switch ($key) {
+            case 'goods_id':
+                $data = Db::view('performance', 'uuid,goods_id,audit_status,create_time')
+                    ->view('goods', 'id,goods_name,shop_name', 'goods.goods_id=performance.goods_id')
+                    ->where('goods.' . $key, $value)
+                    ->paginate($list_rows, $isSimple, $config);
+                break;
+            case 'audit_status':
+                $data = Db::view('performance', 'uuid,goods_id,audit_status,create_time')
+                    ->view('goods', 'id,goods_name,shop_name', 'goods.goods_id=performance.goods_id')
+                    ->where('goods.' . $key, $value)
+                    ->paginate($list_rows, $isSimple, $config);
+                break;
+            default:
+                $data = Db::view('performance', 'id,uuid,goods_id,audit_status,create_time,handler')
+                    // ->view('goods', 'order_id', 'goods.goods_id=performance.goods_id', 'LEFT')
+                    ->view('employee', 'work_num,real_name', 'employee.uuid=performance.uuid')
+                    ->paginate($list_rows, $isSimple, $config);
+        }
+        if (empty($data)) {
+            return false;
+        } else {
+            return $data;
+        }
+    }
+    //员工提交业绩
+    public function insertPerformanceByUuid($uuid, $goods_id)
     {
         try {
             $this->save(['uuid' => $uuid, 'goods_id' => $goods_id]);
@@ -35,7 +64,7 @@ class Performance extends Model
     }
 
     //员工查询业绩
-    public function selectPerformance($uuid, $key, $value, $list_rows = 10, $isSimple = false, $config = '')
+    public function getPerformanceByUuid($uuid, $key, $value, $list_rows = 10, $isSimple = false, $config = '')
     {
         switch ($key) {
                 // case 'order_id':
@@ -68,7 +97,7 @@ class Performance extends Model
         }
     }
 
-    public function softDeletePerformance($uuid = '', $id)
+    public function softDeletePerformanceByUuid($uuid = '', $id)
     {
         try {
             $this->where('uuid', $uuid)->where('id', $id)->delete();
@@ -79,7 +108,7 @@ class Performance extends Model
     }
 
     //员工查询推广商品
-    public function selectPerformanceGoods($uuid, $key, $value, $list_rows = 10, $isSimple = false, $config = '')
+    public function getPerformanceGoodsByUuid($uuid, $key, $value, $list_rows = 10, $isSimple = false, $config = '')
     {
         switch ($key) {
                 // case 'order_id':
@@ -91,7 +120,7 @@ class Performance extends Model
                     ->view('goods', 'id,goods_name,shop_name', 'goods.goods_id=performance.goods_id')
                     // ->view('Score', 'score', 'Score.user_id=Profile.id')
                     ->where('uuid', $uuid)
-                    ->where('goods.'.$key, $value)
+                    ->where('goods.' . $key, $value)
                     ->paginate($list_rows, $isSimple, $config);
                 break;
             case 'audit_status':
@@ -100,7 +129,7 @@ class Performance extends Model
                     ->view('goods', 'id,goods_name,shop_name', 'goods.goods_id=performance.goods_id')
                     // ->view('Score', 'score', 'Score.user_id=Profile.id')
                     ->where('uuid', $uuid)
-                    ->where('goods.'.$key, $value)
+                    ->where('goods.' . $key, $value)
                     ->paginate($list_rows, $isSimple, $config);
                 break;
                 // case 'audit_status':

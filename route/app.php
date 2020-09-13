@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:15:58
- * @LastEditTime: 2020-09-13 14:58:24
+ * @LastEditTime: 2020-09-13 17:02:12
  * @LastEditors: Chenhao Xing
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\route\app.php
@@ -44,18 +44,25 @@ Route::group('login', function () {
 })->completeMatch()->prefix('Login/');
 /********管理员 */
 Route::group('admin', function () {
+    //员工信息
     Route::post('selectEmployee', 'selectEmployee')->middleware('checkrequest', 1)->allowCrossDomain();
+    //员工账户
     Route::post('selectEmployeeAccount', 'selectEmployeeAccount')->middleware('checkrequest', 1)->allowCrossDomain();
     Route::post('updateEmployeeAccount', 'updateEmployeeAccount')->middleware('checkrequest', 1)->allowCrossDomain();
     Route::post('deleteEmployeeAccount', 'deleteEmployeeAccount')->middleware('checkrequest', 1)->allowCrossDomain();
+    //业绩
+    Route::post('selectPerformance', 'selectPerformance')->middleware('checkrequest', 1)->allowCrossDomain();
 
 
+    
     // Route::post('selectGoods', 'selectGoods')->middleware('checkrequest', 1)->allowCrossDomain();
 })->completeMatch()->prefix('Admin/');
 
 /****员工*****/
 // Route::resource('employee','Employee');
 Route::group('employee', function () {
+    // TODO:删除
+    /************* */
     //获取员工所有信息
     Route::get('selectall', 'selectAll')->middleware('checkrequest', 1)->allowCrossDomain();
     //根据工号/姓名获取信息,工号为8位数字
@@ -63,22 +70,24 @@ Route::group('employee', function () {
     //根据权限获取信息
     Route::get('selectByRole', 'selectByRole')->middleware('checkrequest', 1)->allowCrossDomain();
     Route::get('selectAcAll', 'selectAcAll')->middleware('checkrequest', 1)->allowCrossDomain();
+    /************** */
+
     Route::post('sendRecoverCode', 'sendRecoverCode')->allowCrossDomain();
     Route::post('sendActivateCode', 'sendActivateCode')->allowCrossDomain();
     Route::post('checkRecover', 'checkRecover')->allowCrossDomain();
     Route::post('updateAcPW', 'updateAcPW')->allowCrossDomain();
     Route::post('createEmpAc', 'createEmpAc')->allowCrossDomain();
-
     /***********员工业绩******/
     Route::post('submitPerformanc', 'submitPerformanc')->middleware('checkrequest', 5)->allowCrossDomain();
     Route::get('selectPerformanceByUuid', 'selectPerformanceByUuid')->middleware('checkrequest', 5)->allowCrossDomain();
     Route::get('selectPerformanceGoodsByUuid', 'selectPerformanceGoodsByUuid')->middleware('checkrequest', 5)->allowCrossDomain();
     Route::post('deletePerformanceByUuuid', 'deletePerformanceByUuuid')->middleware('checkrequest', 5)->allowCrossDomain();
     /**********员工动态 */
+    //请假
     Route::get('selectEmployeeLeaveByUuid', 'selectEmployeeLeaveByUuid')->middleware('checkrequest', 5)->allowCrossDomain();
     Route::post('addEmployeeLeave', 'addEmployeeLeave')->middleware('checkrequest', 5)->allowCrossDomain();
     Route::post('recallEmployeeLeave', 'recallEmployeeLeave')->middleware('checkrequest', 5)->allowCrossDomain();
-
+    //离职
     Route::get('selectEmployeeQuitByUuid', 'selectEmployeeQuitByUuid')->middleware('checkrequest', 5)->allowCrossDomain();
     Route::post('addEmployeeQuit', 'addEmployeeQuit')->middleware('checkrequest', 5)->allowCrossDomain();
     Route::post('recallEmployeeQuit', 'recallEmployeeQuit')->middleware('checkrequest', 5)->allowCrossDomain();

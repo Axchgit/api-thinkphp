@@ -99,7 +99,7 @@ function  createGuid()
  * @param mixed $uuid
  * @return {string} $jwt:生成的jwt字符串
  */
-function signToken($uuid,$role)
+function signToken($uuid, $role)
 {
     $key = config('login.token_key');         //这里是自定义的一个随机字串，应该写在config文件中的，解密时也会用，相当    于加密中常用的 盐  salt
     $token = array(
@@ -147,4 +147,16 @@ function checkToken($token)
         $status['msg'] = "未知错误";
         return $status;
     }
+}
+// 知识点:去掉二维数组中的重复数据
+function remove_duplicate($array)
+{
+    $result = array();
+    for ($i = 0; $i < count($array); $i++) {
+        $source = $array[$i];
+        if (array_search($source, $array) == $i && $source <> "") {
+            $result[] = $source;
+        }
+    }
+    return $result;
 }
