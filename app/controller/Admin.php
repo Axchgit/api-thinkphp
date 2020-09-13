@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2020-09-13 17:11:13
+ * @LastEditTime: 2020-09-14 00:09:54
  * @LastEditors: Chenhao Xing
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Admin.php
  * @Description: 
@@ -78,6 +78,7 @@ class Admin extends Base
     }
 
     /****************业绩审核 */
+    //查找所有业绩信息
     public function selectPerformance(){
         $post = request()->param();
         $performance_model = new PerformanceModel();
@@ -88,6 +89,22 @@ class Admin extends Base
             return $this->create($list, '查询成功');
         } else {
             return $this->create($list, '暂无数据', 204);
+        }
+    }
+
+    //审核业绩
+    public function reviewPerformance(Request $request){
+        $post =  request()->param();
+        $mid_res = $request->data;
+        $emp_model = new EmployeeModel();
+        $performance_model = new PerformanceModel();
+        $handler = $emp_model->where('uuid',$mid_res['data']->uuid)->value('work_num');
+        $post['handler'] = $handler;
+        $res = $performance_model->updatePerformance($post);
+        if ($res === true) {
+            return $this->create('', '修改成功', 200);
+        } else {
+            return $this->create('', $res, 204);
         }
     }
 
