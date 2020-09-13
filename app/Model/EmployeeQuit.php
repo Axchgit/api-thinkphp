@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-13 12:25:43
+ * @LastEditTime: 2020-09-14 02:13:41
  * @LastEditors: Chenhao Xing
  * @Description: 员工信息
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Employee.php
@@ -70,6 +70,51 @@ class EmployeeQuit extends Model
         // $res = $this->save($data);
     }
 
+    /************管理员操作 */
+
+    //获取信息
+    public function getEmployeeQuit($key, $value, $list_rows = 10, $isSimple = false, $config = '')
+    {
+        switch ($key) {
+            case 'work_num':
+                $data = Db::view('performance', 'uuid,goods_id,audit_status,create_time')
+                    ->view('goods', 'id,goods_name,shop_name', 'goods.goods_id=performance.goods_id')
+                    ->where('goods.' . $key, $value)
+                    ->where('employee_leave.delete_time',null)
+                    ->paginate($list_rows, $isSimple, $config);
+                break;
+            case 'review_status':
+                $data = Db::view('performance', 'uuid,goods_id,audit_status,create_time')
+                    ->view('goods', 'id,goods_name,shop_name', 'goods.goods_id=performance.goods_id')
+                    ->where('goods.' . $key, $value)
+                    ->where('employee_leave.delete_time',null)
+                    ->paginate($list_rows, $isSimple, $config);
+                break;
+            default:
+                $data = Db::view('employee_quit', 'id,uuid,category,reason,estimated_time,agent,review_status,reviewer,create_time')
+                    // ->view('goods', 'order_id', 'goods.goods_id=performance.goods_id', 'LEFT')
+                    ->view('employee', 'work_num,real_name', 'employee.uuid=employee_quit.uuid')
+                    ->where('employee_quit.delete_time',null)
+                    ->paginate($list_rows, $isSimple, $config);
+        }
+        if (empty($data)) {
+            return false;
+        } else {
+            return $data;
+        }
+    }
+
+    //修改/审核请假动态
+    public function updateEmployeeQuit($data)
+    {
+        try {
+            $this->update($data);
+            // $this->update(['review_status' => $data['review_status'], 'id' => $data['id']]);
+            return true;
+        } catch (\Exception $e) {
+            return $e;
+        }
+    }
 
 
 

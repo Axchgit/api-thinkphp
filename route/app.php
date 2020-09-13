@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:15:58
- * @LastEditTime: 2020-09-13 23:14:42
+ * @LastEditTime: 2020-09-14 02:24:38
  * @LastEditors: Chenhao Xing
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\route\app.php
@@ -51,11 +51,17 @@ Route::group('admin', function () {
     Route::post('updateEmployeeAccount', 'updateEmployeeAccount')->middleware('checkrequest', 1)->allowCrossDomain();
     Route::post('deleteEmployeeAccount', 'deleteEmployeeAccount')->middleware('checkrequest', 1)->allowCrossDomain();
     //业绩
-    Route::post('selectPerformance', 'selectPerformance')->middleware('checkrequest', 1)->allowCrossDomain();
+    Route::get('selectPerformance', 'selectPerformance')->middleware('checkrequest', 1)->allowCrossDomain();
     Route::post('reviewPerformance', 'reviewPerformance')->middleware('checkrequest', 1)->allowCrossDomain();
+    //动态
+    Route::get('selectEmployeeLeave', 'selectEmployeeLeave')->middleware('checkrequest', 1)->allowCrossDomain();
+    Route::post('reviewEmployeeLeave', 'reviewEmployeeLeave')->middleware('checkrequest', 1)->allowCrossDomain();
+    Route::get('selectEmployeeQuit', 'selectEmployeeQuit')->middleware('checkrequest', 1)->allowCrossDomain();
+    Route::post('reviewEmployeeQuit', 'reviewEmployeeQuit')->middleware('checkrequest', 1)->allowCrossDomain();
 
 
 
+    
     
     // Route::post('selectGoods', 'selectGoods')->middleware('checkrequest', 1)->allowCrossDomain();
 })->completeMatch()->prefix('Admin/');

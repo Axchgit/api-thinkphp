@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2020-09-14 00:09:54
+ * @LastEditTime: 2020-09-14 02:11:07
  * @LastEditors: Chenhao Xing
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Admin.php
  * @Description: 
@@ -17,6 +17,10 @@ use think\Request;
 use app\model\Employee as EmployeeModel;
 use app\model\EmployeeLogin as EmpLoginModel;
 use app\model\Performance as PerformanceModel;
+use app\model\EmployeeLeave as EmployeeLeaveModel;
+use app\model\EmployeeQuit as EmployeeQuitModel;
+
+
 
 use think\facade\Db;
 
@@ -79,7 +83,8 @@ class Admin extends Base
 
     /****************业绩审核 */
     //查找所有业绩信息
-    public function selectPerformance(){
+    public function selectPerformance()
+    {
         $post = request()->param();
         $performance_model = new PerformanceModel();
         $key = !empty($post['key']) ? $post['key'] : '';
@@ -93,12 +98,13 @@ class Admin extends Base
     }
 
     //审核业绩
-    public function reviewPerformance(Request $request){
+    public function reviewPerformance(Request $request)
+    {
         $post =  request()->param();
         $mid_res = $request->data;
         $emp_model = new EmployeeModel();
         $performance_model = new PerformanceModel();
-        $handler = $emp_model->where('uuid',$mid_res['data']->uuid)->value('work_num');
+        $handler = $emp_model->where('uuid', $mid_res['data']->uuid)->value('work_num');
         $post['handler'] = $handler;
         $res = $performance_model->updatePerformance($post);
         if ($res === true) {
@@ -107,6 +113,74 @@ class Admin extends Base
             return $this->create('', $res, 204);
         }
     }
+
+    /********************动态审核 */
+    //查找请假信息
+    public function selectEmployeeLeave()
+    {
+        $post = request()->param();
+        $leave_model = new EmployeeLeaveModel();
+        $key = !empty($post['key']) ? $post['key'] : '';
+        $value = !empty($post['value']) ? $post['value'] : '';
+        $list = $leave_model->getEmployeeLeave($key, $value, $post['list_rows'], false, ['query' => $post]);
+        if ($list) {
+            return $this->create($list, '查询成功');
+        } else {
+            return $this->create($list, '暂无数据', 204);
+        }
+    }
+    //审核请假动态
+    public function reviewEmployeeLeave(Request $request)
+    {
+        $post =  request()->param();
+        $mid_res = $request->data;
+        $emp_model = new EmployeeModel();
+        $leave_model = new EmployeeLeaveModel();
+        $reviewer = $emp_model->where('uuid', $mid_res['data']->uuid)->value('work_num');
+        $post['reviewer'] = $reviewer;
+        $res = $leave_model->updateEmployeeLeave($post);
+        // return $this->create($post, '修改成功', 200);
+
+        if ($res === true) {
+            return $this->create('', '修改成功', 200);
+        } else {
+            return $this->create('', $res, 204);
+        }
+    }
+
+    //查找离职信息
+    public function selectEmployeeQuit()
+    {
+        $post = request()->param();
+        $quit_model = new EmployeeQuitModel();
+        $key = !empty($post['key']) ? $post['key'] : '';
+        $value = !empty($post['value']) ? $post['value'] : '';
+        $list = $quit_model->getEmployeeQuit($key, $value, $post['list_rows'], false, ['query' => $post]);
+        if ($list) {
+            return $this->create($list, '查询成功');
+        } else {
+            return $this->create($list, '暂无数据', 204);
+        }
+    }
+    //审核离职动态
+    public function reviewEmployeeQuit(Request $request)
+    {
+        $post =  request()->param();
+        $mid_res = $request->data;
+        $emp_model = new EmployeeModel();
+        $quit_model = new EmployeeQuitModel();
+        $reviewer = $emp_model->where('uuid', $mid_res['data']->uuid)->value('work_num');
+        $post['reviewer'] = $reviewer;
+        $res = $quit_model->updateEmployeeQuit($post);
+        // return $this->create($post, '修改成功', 200);
+        if ($res === true) {
+            return $this->create('', '修改成功', 200);
+        } else {
+            return $this->create('', $res, 204);
+        }
+    }
+
+
 
 
 
