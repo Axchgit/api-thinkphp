@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-14 13:54:35
+ * @LastEditTime: 2020-09-14 15:43:42
  * @LastEditors: Chenhao Xing
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Goods.php
@@ -15,7 +15,7 @@ namespace app\model;
 // use think\Db;
 use think\Model;
 use think\facade\Db;
-use app\model\GoodsTemp as GoodsTempModel;
+// use app\model\GoodsTemp as GoodsTempModel;
 
 
 class Goods extends Model
@@ -23,7 +23,7 @@ class Goods extends Model
     //插入报表
     public function insertGoods($dataArr)
     {
-        $gt_mode = new GoodsTempModel();
+        // $gt_mode = new GoodsTempModel();
         $goods = [];
         //CODE:将二维关联数组转换为数据库数组
         // foreach ($dataArr[0] as $k => $v) {
@@ -127,7 +127,9 @@ class Goods extends Model
         Db::startTrans();
         try {
             if (!empty($goods)) {
-                $gt_mode->limit(100)->insertAll($goods);
+                // $gt_mode->limit(100)->insertAll($goods);
+                Db::table('goods_temp')->limit(100)->insertAll($goods);
+
             } else {
                 // Db::rollback();
                 return false;
@@ -163,47 +165,6 @@ class Goods extends Model
             return $e;
         }
     }
-    //CODE:增量更新数据
-    public function incrementalUpdata()
-    {
-
-        /*更新数据*/
-        //查询重复数据
-        $same = Db::view('goods')
-            ->view('goods_temp', 'goods_name', 'goods.order_id = goods_temp.order_id')
-            ->select();
-        // return $same;
-        //更新语句
-        // return $this->saveAll($same);
-
-        //删除临时表里的重复数据
-        foreach ($same as $k => $v) {
-            Db::table('goods')->where('order_id', $v['order_id'])->delete();
-        }
-        // return true;
-        /*插入新增数据*/
-
-        //查询剩余数据
-        $data = Db::table('goods_temp')->withoutField('id')->select()->toArray();
-        // return json($data);
-        if (empty($data)) {
-            //返回数据优化
-            return '无新增';
-        }
-
-        //删除临时表里的剩余数据
-        //FIXME:
-        // $this->delete(true);
-
-        // foreach ($data as $k => $v) {
-        //     Db::table('goods_temp')->where('id', $v['id'])->delete();
-        // }
-
-        //插入新增数据到goods
-        $this->insertAll($data);
-        //TODO:返回数据优化
-        return '成功';
-    }
 
 
     //查询goods
@@ -231,4 +192,46 @@ class Goods extends Model
             return $data;
         }
     }
+
+    /*******废弃代码TODO:删除 */
+    // TODO:删除废弃代码
+        // public function incrementalUpdata()
+    // {
+
+    //     /*更新数据*/
+    //     //查询重复数据
+    //     $same = Db::view('goods')
+    //         ->view('goods_temp', 'goods_name', 'goods.order_id = goods_temp.order_id')
+    //         ->select();
+    //     // return $same;
+    //     //更新语句
+    //     // return $this->saveAll($same);
+
+    //     //删除临时表里的重复数据
+    //     foreach ($same as $k => $v) {
+    //         Db::table('goods')->where('order_id', $v['order_id'])->delete();
+    //     }
+    //     // return true;
+    //     /*插入新增数据*/
+
+    //     //查询剩余数据
+    //     $data = Db::table('goods_temp')->withoutField('id')->select()->toArray();
+    //     // return json($data);
+    //     if (empty($data)) {
+    //         //返回数据优化
+    //         return '无新增';
+    //     }
+
+    //     //删除临时表里的剩余数据
+    //     // $this->delete(true);
+
+    //     // foreach ($data as $k => $v) {
+    //     //     Db::table('goods_temp')->where('id', $v['id'])->delete();
+    //     // }
+
+    //     //插入新增数据到goods
+    //     $this->insertAll($data);
+    //     return '成功';
+    // }
+
 }

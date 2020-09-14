@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2020-09-14 14:02:56
+ * @LastEditTime: 2020-09-14 15:37:10
  * @LastEditors: Chenhao Xing
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Admin.php
  * @Description: 
@@ -24,12 +24,30 @@ use app\model\Feedback as FeedbackModel;
 
 
 
+
 use think\facade\Db;
 
 class Admin extends Base
 {
+    /**
+     * @description: 上传报表,读取报表数据存入数据库
+     * @param {type} 
+     * @return {type} 
+     */
+    public function uploadExcel()
+    {
+        $post =  request()->param();
+        $emp_model = new EmployeeModel();
+        $res = $emp_model->updateEmployee($post);
+        if ($res === true) {
+            return $this->create('', '添加成功', 200);
+        } else {
+            return $this->create($res, $res, 204);
+        }
+    }
     //员工个人信息查询
-    public function selectEmployee()
+
+    public function selectEmployeeInfo()
     {
         $post = request()->param();
         $emp_model = new EmployeeModel();
@@ -42,18 +60,30 @@ class Admin extends Base
             return $this->create($list, '暂无数据', 204);
         }
     }
-        //删除员工个人信息
-        public function deleteEmployeeInfo()
-        {
-            $post =  request()->param();
-            $emp_model = new EmployeeModel();
-            $res = $emp_model->deleteEmployeeInfo($post['id']);
-            if ($res === true) {
-                return $this->create('', '账户信息删除成功', 200);
-            } else {
-                return $this->create('', $res, 204);
-            }
+    //修改员工账户信息
+    public function updateEmployeeInfo()
+    {
+        $post =  request()->param();
+        $emp_model = new EmployeeModel();
+        $res = $emp_model->updateEmployeeInfo($post);
+        if ($res === true) {
+            return $this->create('', '修改成功', 200);
+        } else {
+            return $this->create('', $res, 204);
         }
+    }
+    //删除员工个人信息
+    public function deleteEmployeeInfo()
+    {
+        $post =  request()->param();
+        $emp_model = new EmployeeModel();
+        $res = $emp_model->deleteEmployeeInfo($post['id']);
+        if ($res === true) {
+            return $this->create('', '账户信息删除成功', 200);
+        } else {
+            return $this->create('', $res, 204);
+        }
+    }
     //员工账户信息查询
     public function selectEmployeeAccount()
     {
@@ -195,7 +225,7 @@ class Admin extends Base
     }
 
 
-        /****************反馈处理 */
+    /****************反馈处理 */
     //查找所有业绩信息
     public function selectFeedback()
     {
