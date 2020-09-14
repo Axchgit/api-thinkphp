@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-14 02:43:23
+ * @LastEditTime: 2020-09-14 12:13:33
  * @LastEditors: Chenhao Xing
  * @Description: 员工信息
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Employee.php
@@ -63,7 +63,7 @@ class Feedback extends Model
     {
         try {
             $process_status = $this->where('uuid', $uuid)->where('id', $id)->value('process_status');
-            if ($process_status == 2) {
+            if ($process_status == 2 || $process_status == 3) {
                 return '不能删除已处理数据';
             }
             //软删除

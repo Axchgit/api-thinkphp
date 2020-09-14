@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-13 23:13:56
+ * @LastEditTime: 2020-09-14 12:29:34
  * @LastEditors: Chenhao Xing
  * @Description: 员工信息
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Performance.php
@@ -59,7 +59,11 @@ class Performance extends Model
             $this->save(['uuid' => $uuid, 'goods_id' => $goods_id]);
             return true;
         } catch (\Exception  $e) {
-            return $e;
+            if ($e->getCode() == 10501) {
+                return '不能重复添加商品';
+            } else {
+                return '错误码' . $e->getCode();
+            }
         }
     }
 
@@ -100,6 +104,10 @@ class Performance extends Model
     public function softDeletePerformanceByUuid($uuid = '', $id)
     {
         try {
+            $audit_status = $this->where('uuid', $uuid)->where('id', $id)->value('audit_status');
+            if ($audit_status == 2 || $audit_status == 3) {
+                return '不能删除已审核数据';
+            }
             $this->where('uuid', $uuid)->where('id', $id)->delete();
             return true;
         } catch (\Exception  $e) {
@@ -129,7 +137,7 @@ class Performance extends Model
                     ->view('goods', 'id,goods_name,shop_name', 'goods.goods_id=performance.goods_id')
                     // ->view('Score', 'score', 'Score.user_id=Profile.id')
                     ->where('uuid', $uuid)
-                    ->where('goods.' . $key, $value)
+                    ->where('performance.' . $key, $value)
                     ->paginate($list_rows, $isSimple, $config);
                 break;
                 // case 'audit_status':

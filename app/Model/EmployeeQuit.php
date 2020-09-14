@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-14 02:13:41
+ * @LastEditTime: 2020-09-14 12:09:39
  * @LastEditors: Chenhao Xing
  * @Description: 员工信息
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Employee.php
@@ -58,8 +58,8 @@ class EmployeeQuit extends Model
     {
         try {
             $review_status = $this->where('uuid', $uuid)->where('id', $id)->value('review_status');
-            if ($review_status == 2) {
-                return '不能删除已通过审核数据';
+            if ($review_status == 2 || $review_status == 3) {
+                return '不能删除已审核数据';
             }
             //软删除
             $this->destroy($id);
@@ -80,21 +80,21 @@ class EmployeeQuit extends Model
                 $data = Db::view('performance', 'uuid,goods_id,audit_status,create_time')
                     ->view('goods', 'id,goods_name,shop_name', 'goods.goods_id=performance.goods_id')
                     ->where('goods.' . $key, $value)
-                    ->where('employee_leave.delete_time',null)
+                    ->where('employee_leave.delete_time', null)
                     ->paginate($list_rows, $isSimple, $config);
                 break;
             case 'review_status':
                 $data = Db::view('performance', 'uuid,goods_id,audit_status,create_time')
                     ->view('goods', 'id,goods_name,shop_name', 'goods.goods_id=performance.goods_id')
                     ->where('goods.' . $key, $value)
-                    ->where('employee_leave.delete_time',null)
+                    ->where('employee_leave.delete_time', null)
                     ->paginate($list_rows, $isSimple, $config);
                 break;
             default:
                 $data = Db::view('employee_quit', 'id,uuid,category,reason,estimated_time,agent,review_status,reviewer,create_time')
                     // ->view('goods', 'order_id', 'goods.goods_id=performance.goods_id', 'LEFT')
                     ->view('employee', 'work_num,real_name', 'employee.uuid=employee_quit.uuid')
-                    ->where('employee_quit.delete_time',null)
+                    ->where('employee_quit.delete_time', null)
                     ->paginate($list_rows, $isSimple, $config);
         }
         if (empty($data)) {

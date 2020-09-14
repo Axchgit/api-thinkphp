@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2020-09-14 02:57:33
+ * @LastEditTime: 2020-09-14 14:02:56
  * @LastEditors: Chenhao Xing
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Admin.php
  * @Description: 
@@ -42,6 +42,18 @@ class Admin extends Base
             return $this->create($list, '暂无数据', 204);
         }
     }
+        //删除员工个人信息
+        public function deleteEmployeeInfo()
+        {
+            $post =  request()->param();
+            $emp_model = new EmployeeModel();
+            $res = $emp_model->deleteEmployeeInfo($post['id']);
+            if ($res === true) {
+                return $this->create('', '账户信息删除成功', 200);
+            } else {
+                return $this->create('', $res, 204);
+            }
+        }
     //员工账户信息查询
     public function selectEmployeeAccount()
     {

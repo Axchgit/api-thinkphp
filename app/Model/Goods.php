@@ -2,8 +2,8 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-04 19:58:01
- * @LastEditors: xch
+ * @LastEditTime: 2020-09-14 13:54:35
+ * @LastEditors: Chenhao Xing
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Goods.php
  */
@@ -80,7 +80,7 @@ class Goods extends Model
             // "招商佣金": "3%", commission_rate
             // "招商收入(元)": "1.44"]; expec_commission,
 
-            $goods[$k]['platform'] = empty($k['推手duoid']) ? 'jd' : 'pdd';
+            $goods[$k]['platform'] = empty($v['推手duoid']) ? 'jd' : 'pdd';
 
             //CODE：去除字符串内某个字符
             $count = strpos($v['订单号'], "-");

@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2020-09-13 16:53:31
+ * @LastEditTime: 2020-09-14 12:24:24
  * @LastEditors: Chenhao Xing
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Employee.php
  * @Description: 
@@ -174,7 +174,7 @@ class Employee extends Base
         if ($res === true) {
             return $this->create('', '添加成功', 200);
         } else {
-            return $this->create($res, '添加失败', 204);
+            return $this->create('', $res, 204);
         }
     }
 
@@ -205,7 +205,7 @@ class Employee extends Base
         if ($res === true) {
             return $this->create('', '删除成功', 200);
         } else {
-            return $this->create($res, '删除失败', 204);
+            return $this->create('', $res, 204);
         }
     }
 
@@ -269,7 +269,7 @@ class Employee extends Base
         if ($res === true) {
             return $this->create('', '添加成功', 200);
         } else {
-            return $this->create($res, '添加失败', 204);
+            return $this->create('', '添加失败', 204);
         }
     }
     //员工撤回请假请求
@@ -282,7 +282,7 @@ class Employee extends Base
         if ($res === true) {
             return $this->create('', '删除成功', 200);
         } else {
-            return $this->create($res, '删除失败', 204);
+            return $this->create('', $res, 204);
         }
     }
     //员工离职
@@ -325,7 +325,7 @@ class Employee extends Base
         if ($res === true) {
             return $this->create('', '删除成功', 200);
         } else {
-            return $this->create($res, '删除失败', 204);
+            return $this->create('', $res, 204);
         }
     }
 
@@ -372,7 +372,7 @@ class Employee extends Base
         if ($res === true) {
             return $this->create('', '删除成功', 200);
         } else {
-            return $this->create($res, '删除失败', 204);
+            return $this->create('', $res, 204);
         }
     }
 

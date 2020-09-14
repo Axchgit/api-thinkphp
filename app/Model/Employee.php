@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-13 02:34:15
+ * @LastEditTime: 2020-09-14 14:03:30
  * @LastEditors: Chenhao Xing
  * @Description: 员工信息
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Employee.php
@@ -118,4 +118,25 @@ class Employee extends Model
         $emp_uuid = $this->where('work_num', $work_num)->value('uuid');
         return Db::table('temp_code')->where('uuid', $emp_uuid)->delete();
     }
+
+        // 删除人员信息
+        public function deleteEmployeeInfo($id)
+        {
+            try {
+                //软删除
+                $uuid = $this->where('id',$id)->value('uuid');
+                $this->destroy($id);
+                //更新账户激活状态
+                // $emp_model = new EmployeeModel();
+                // $employee = $emp_model->where('uuid',$uuid)->find();
+                // $employee->review_status = 0;
+                // $employee->save();
+                return true;
+            } catch (\Exception $e) {
+                return $e;
+            }
+            // $res = $this->save($data);
+        }
+
+    
 }
