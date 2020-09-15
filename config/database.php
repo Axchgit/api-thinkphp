@@ -2,8 +2,8 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:15:58
- * @LastEditTime: 2020-08-24 14:46:56
- * @LastEditors: xch
+ * @LastEditTime: 2020-09-16 02:13:09
+ * @LastEditors: Chenhao Xing
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\config\database.php
  * @Description: 此为生产环境下的配置,开发环境配置在.env中
  */
@@ -58,7 +58,7 @@ return [
             // 是否需要断线重连
             'break_reconnect'   => false,
             // 监听SQL
-            'trigger_sql'       => env('app_debug', true),
+            'trigger_sql'       => env('app_debug', false),
             // 开启字段缓存
             'fields_cache'      => false,
             // 字段缓存路径

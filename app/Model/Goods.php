@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-15 16:19:31
+ * @LastEditTime: 2020-09-16 02:02:19
  * @LastEditors: Chenhao Xing
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Goods.php
@@ -139,10 +139,10 @@ class Goods extends Model
         try {
             if (!empty($goods)) {
                 // $gt_mode->limit(100)->insertAll($goods);
-                // Db::table('goods_temp')->limit(100)->insertAll($goods);
+                Db::table('goods_temp')->limit(100)->insertAll($goods);
                 // Db::table('goods_temp')->saveAll($goods);
-                $gt_mode = new GoodsTempModel();
-                $gt_mode->saveUpload($goods);
+                // $gt_mode = new GoodsTempModel();
+                // $gt_mode->saveUpload($goods);
             } else {
                 // Db::rollback();
                 return false;

@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2020-09-14 19:20:37
+ * @LastEditTime: 2020-09-15 22:18:21
  * @LastEditors: Chenhao Xing
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Admin.php
  * @Description: 
@@ -254,7 +254,7 @@ class Admin extends Base
         if ($res === true) {
             return $this->create('', '修改成功', 200);
         } else {
-            return $this->create('', $res, 204);
+            return $this->create($res, '失败', 204);
         }
     }
 
