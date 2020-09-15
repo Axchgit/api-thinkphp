@@ -2,8 +2,8 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2020-09-04 17:51:12
- * @LastEditors: xch
+ * @LastEditTime: 2020-09-15 14:00:07
+ * @LastEditors: Chenhao Xing
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Goods.php
  * @Description: 
  */
@@ -18,6 +18,7 @@ use app\model\Goods as GoodsModel;
 // use app\model\EmployeeLogin as EmpLoginModel;
 
 use think\facade\Db;
+use think\facade\Cache;
 
 class Goods extends Base
 {
@@ -34,8 +35,25 @@ class Goods extends Base
         if ($res === true) {
             return $this->create('', '添加成功', 200);
         } else {
-            return $this->create($res, $res, 204);
+            return $this->create('', $res, 204);
         }
+    }
+    //获取进度
+    public function getSpeed(){
+        // $goods_model = new GoodsModel();
+        // $goods_model->speed();
+        $data = [
+            'speed1'=>Cache::get('speed1', '未缓存'),
+            'speed2'=>Cache::get('speed2', '未缓存'),
+            'speed3'=>Cache::get('speed3', '未缓存'),
+            'speed4'=>Cache::get('speed4', '未缓存'),
+            'speed5'=>Cache::get('speed5', '未缓存'),
+            'speed6'=>Cache::get('speed6', '未缓存'),
+
+        ];
+        return $this->create($data, '添加成功', 200);
+
+        // return Cache::get('speed', '未缓存');
     }
     /**
      * @description: goods查询

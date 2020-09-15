@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2020-09-13 02:37:47
+ * @LastEditTime: 2020-09-14 18:38:37
  * @LastEditors: Chenhao Xing
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Test.php
@@ -21,6 +21,8 @@ use app\model\Admin as AdminModel;
 use think\facade\Db;
 use app\model\Goods as GoodsModel;
 use app\model\GoodsTemp as GoodsTempModel;
+use app\model\Employee as EmployeeModel;
+
 
 
 

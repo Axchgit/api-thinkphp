@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2020-09-14 15:37:10
+ * @LastEditTime: 2020-09-14 19:20:37
  * @LastEditors: Chenhao Xing
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Admin.php
  * @Description: 
@@ -38,7 +38,7 @@ class Admin extends Base
     {
         $post =  request()->param();
         $emp_model = new EmployeeModel();
-        $res = $emp_model->updateEmployee($post);
+        $res = $emp_model->insertEmployee($post);
         if ($res === true) {
             return $this->create('', '添加成功', 200);
         } else {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 /*
  * @Author: xch
  * @Date: 2020-08-19 14:18:43
- * @LastEditTime: 2020-08-24 02:00:05
- * @LastEditors: xch
+ * @LastEditTime: 2020-09-14 20:49:51
+ * @LastEditors: Chenhao Xing
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\middleware\CheckRequest.php
  * @Description: 
  */
@@ -41,7 +41,7 @@ class CheckRequest extends Base
             return $this->create('', $res['msg'], 304);
         }
         // return json($res['data']->role);
-        if ($res['data']->role >= $need_role) {
+        if ($res['data']->role > $need_role) {
             return $this->create('', '没有权限', 204);
         };
         // return $this->create('', '没有权限', 204);

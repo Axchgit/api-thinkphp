@@ -2,8 +2,8 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-09 19:33:12
- * @LastEditors: xch
+ * @LastEditTime: 2020-09-14 18:28:25
+ * @LastEditors: Chenhao Xing
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Admin.php
  */
@@ -80,4 +80,7 @@ class Admin extends Model
 
         return $this->where('admin_name', $name)->value('admin_email');
     }
+
+
+    //over
 }

@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-14 15:43:42
+ * @LastEditTime: 2020-09-15 16:19:31
  * @LastEditors: Chenhao Xing
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Goods.php
@@ -15,7 +15,8 @@ namespace app\model;
 // use think\Db;
 use think\Model;
 use think\facade\Db;
-// use app\model\GoodsTemp as GoodsTempModel;
+use think\facade\Cache;
+use app\model\GoodsTemp as GoodsTempModel;
 
 
 class Goods extends Model
@@ -23,6 +24,11 @@ class Goods extends Model
     //插入报表
     public function insertGoods($dataArr)
     {
+        ini_set("memory_limit", "-1");
+
+
+        // Cache::set('speed1', time());
+
         // $gt_mode = new GoodsTempModel();
         $goods = [];
         //CODE:将二维关联数组转换为数据库数组
@@ -93,15 +99,14 @@ class Goods extends Model
             $goods[$k]['shop_name'] = empty($v['店铺id']) ? $v['商品店铺名称'] : $v['店铺id'];
             $goods[$k]['payment_amount'] = empty($v['订单金额(元)']) ? $v['付款金额'] * 100 : $v['订单金额(元)'] * 100;     //*100 让数据以整数存储
             $goods[$k]['commission_rate'] = empty($v['招商佣金']) ?  $v['佣金比例'] * 1000 : substr($v['招商佣金'], 0, -1) * 10;
-            $goods[$k]['expec_commission'] = empty($v['招商收入(元)']) ? $v['预估佣金'] * 100 : $v['招商收入(元)'] * 100;
-
+            // $goods[$k]['expec_commission'] = empty($v['招商收入(元)']) ? $v['预估佣金'] * 100 : $v['招商收入(元)'] * 100;
+            $goods[$k]['expec_commission'] = empty($v['招商收入(元)']) ? (empty($v['预估佣金']) ? 0 : $v['预估佣金']) : $v['招商收入(元)'] * 100;
+            // 招商收入(元)
             $goods[$k]['leader_nickname'] = empty($v['招商团长昵称']) ? '' : $v['招商团长昵称'];
             $goods[$k]['leader_duoid'] = empty($v['招商duoid']) ? '' : $v['招商duoid'];
             $goods[$k]['salesman_nickname'] = empty($v['推手昵称']) ? '' : $v['推手昵称'];
             $goods[$k]['salesman_duoid'] = empty($v['推手duoid']) ? '' : $v['推手duoid'];
             $goods[$k]['salesman_commission'] = empty($v['推手佣金']) ? '' : substr($v['推手佣金'], 0, -1) * 10;
-
-
             $goods[$k]['after_sale_number'] = empty($v['商品售后中数量']) ? '' : $v['商品售后中数量'];
             $goods[$k]['return_goods_number'] = empty($v['商品已退货数量']) ? '' : $v['商品已退货数量'];
             $goods[$k]['is_same_shop'] = empty($v['同跨店']) ? '' : $v['同跨店'];
@@ -122,18 +127,27 @@ class Goods extends Model
             $goods[$k]['promotion_role'] = empty($v['推广角色']) ? '' : $v['推广角色'];
             $goods[$k]['group_activity_id'] = empty($v['团活动ID']) ? '' : $v['团活动ID'];
             $goods[$k]['group_activity_name'] = empty($v['团活动名称']) ? '' : $v['团活动名称'];
+            if ($goods[$k]['expec_commission'] == 0) {
+                unset($goods[$k]); 
+                //使用array_values()重新建立索引
+                $goods = array_values($goods);
+            }
         }
+        // Cache::set('speed2', time());
         // }
         Db::startTrans();
         try {
             if (!empty($goods)) {
                 // $gt_mode->limit(100)->insertAll($goods);
-                Db::table('goods_temp')->limit(100)->insertAll($goods);
-
+                // Db::table('goods_temp')->limit(100)->insertAll($goods);
+                // Db::table('goods_temp')->saveAll($goods);
+                $gt_mode = new GoodsTempModel();
+                $gt_mode->saveUpload($goods);
             } else {
                 // Db::rollback();
                 return false;
             }
+            // Cache::set('speed3', time());
             //查询重复数据
             $same = Db::view('goods')
                 ->view('goods_temp', 'goods_name', 'goods.order_id = goods_temp.order_id')
@@ -142,6 +156,7 @@ class Goods extends Model
             foreach ($same as $k => $v) {
                 Db::table('goods')->where('order_id', $v['order_id'])->delete();
             }
+            // Cache::set('speed4', time());
             //查询临时表数据
             //知识点:查询时忽略某个字段
             $data = Db::table('goods_temp')->withoutField('id')->select()->toArray();
@@ -150,19 +165,19 @@ class Goods extends Model
                 return '临时表数据为空';
             }
             $res = $this->limit(100)->insertAll($data);
+            // Cache::set('speed5', time());
             if ($res) {
                 Db::table('goods_temp')->delete(true);
                 Db::commit();
+                // Cache::set('speed6', time());
                 return true;
             } else {
                 // Db::rollback();
-                return '插入goods表失败'.$res;
+                return '插入goods表失败' . $res;
             }
         } catch (\Exception  $e) {
             Db::rollback();
-            // return '插入goods表失败';
-
-            return $e;
+            return $e->getMessage();
         }
     }
 
@@ -192,10 +207,21 @@ class Goods extends Model
             return $data;
         }
     }
+    //获取进度
+    // public function speed()
+    // {
+    //         // Cache::set('speed', 1);
+
+    //     // for($i=0;$i<10000;$i++){
+
+    //     //     Cache::set('speed', 1);
+    //     // }
+    //     return Cache::get('speed', '未缓存');
+    // }
 
     /*******废弃代码TODO:删除 */
     // TODO:删除废弃代码
-        // public function incrementalUpdata()
+    // public function incrementalUpdata()
     // {
 
     //     /*更新数据*/

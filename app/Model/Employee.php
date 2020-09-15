@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-14 16:01:29
+ * @LastEditTime: 2020-09-14 20:34:15
  * @LastEditors: Chenhao Xing
  * @Description: 员工信息
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Employee.php
@@ -32,7 +32,7 @@ class Employee extends Model
         return Db::table('temp_code')->insert($data);
         // $admin->code = $log_code;
     }
-    
+
     //删除验证码
     public function deleteEmpCode($work_num)
     {
@@ -94,70 +94,80 @@ class Employee extends Model
         // $res = $this->save($data);
     }
 
-        //插入报表
-        public function insertEmployee($dataArr)
-        {
-            // $gt_mode = new GoodsTempModel();
-            $employee = [];
-            foreach ($dataArr as $k => $v) {
-                
+    //插入报表
+    public function insertEmployee($dataArr)
+    {
+        // $gt_mode = new GoodsTempModel();
+        $employee = [];
+        foreach ($dataArr as $k => $v) {
 
-                $employee[$k]['work_num'] = empty($v['工号']) ? '' : $v['工号'];
-                $employee[$k]['real_name'] = empty($v['真实姓名']) ? '' : $v['真实姓名'];
-                $employee[$k]['email'] = empty($v['邮箱']) ? '' : $v['邮箱'];
-                $employee[$k]['id_photo'] = empty($v['证件照存放地址']) ? '' : $v['证件照存放地址'];
-                $employee[$k]['id_card'] = empty($v['身份证号']) ? '' : $v['身份证号'];
-                $employee[$k]['bank_card'] = empty($v['工资卡']) ? '' : $v['工资卡'];
-                $employee[$k]['birthday'] = empty($v['生日']) ? '' : $v['生日'];
-                $employee[$k]['sex'] = empty($v['性别']) ? '' : $v['性别'];
-                $employee[$k]['role'] = empty($v['权限等级']) ? '' : $v['权限等级'];
-                $employee[$k]['work_num'] = empty($v['工号']) ? '' : $v['工号'];
-                $employee[$k]['work_num'] = empty($v['工号']) ? '' : $v['工号'];
-                $employee[$k]['work_num'] = empty($v['工号']) ? '' : $v['工号'];
-                $employee[$k]['work_num'] = empty($v['工号']) ? '' : $v['工号'];
+
+            $employee[$k]['work_num'] = empty($v['工号']) ? '' : $v['工号'];
+            //判断是否为新增
+            $old = $this->where('work_num', $employee[$k]['work_num'])->find();
+            // return $old;
+            if (!empty($old)) {
+                $employee[$k]['uuid'] = $old['uuid'];
+                // $employee[$k]['id'] = $old['id'];
+                $employee[$k]['create_time'] = $old['create_time'];
+
+            } else {
+                $employee[$k]['uuid'] = createGuid();
+                // $employee[$k]['id'] = null;
+                $employee[$k]['create_time'] = date('Y-m-d H:i:s', time()); ;
             }
-            // }
-            Db::startTrans();
-            try {
-                if (!empty($goods)) {
-                    // $gt_mode->limit(100)->insertAll($goods);
-                    Db::table('goods_temp')->limit(100)->insertAll($goods);
-    
-                } else {
-                    // Db::rollback();
-                    return false;
-                }
-                //查询重复数据
-                $same = Db::view('goods')
-                    ->view('goods_temp', 'goods_name', 'goods.order_id = goods_temp.order_id')
-                    ->select();
-                //删除表里的重复数据
-                foreach ($same as $k => $v) {
-                    Db::table('goods')->where('order_id', $v['order_id'])->delete();
-                }
-                //查询临时表数据
-                //知识点:查询时忽略某个字段
-                $data = Db::table('goods_temp')->withoutField('id')->select()->toArray();
-                if (empty($data)) {
-                    // Db::rollback();
-                    return '临时表数据为空';
-                }
-                $res = $this->limit(100)->insertAll($data);
-                if ($res) {
-                    Db::table('goods_temp')->delete(true);
-                    Db::commit();
-                    return true;
-                } else {
-                    // Db::rollback();
-                    return '插入goods表失败'.$res;
-                }
-            } catch (\Exception  $e) {
-                Db::rollback();
-                // return '插入goods表失败';
-    
-                return $e;
-            }
+            $employee[$k]['real_name'] = empty($v['姓名']) ? '' : $v['姓名'];
+            $employee[$k]['phone'] = empty($v['手机号']) ? '' : $v['手机号'];
+            $employee[$k]['email'] = empty($v['邮箱']) ? '' : $v['邮箱'];
+            // $employee[$k]['id_photo'] = empty($v['证件照存放地址']) ? '' : $v['证件照存放地址'];
+            $employee[$k]['id_card'] = empty($v['身份证号']) ? '' : $v['身份证号'];
+            $employee[$k]['bank_card'] = empty($v['工资卡']) ? '' : $v['工资卡'];
+            $employee[$k]['birthday'] = empty($v['生日']) ? '' : ($v['生日'] - 70 * 365 - 19) * 86400 - 8 * 3600; //把excel时间转化为时间戳
+            $employee[$k]['sex'] = empty($v['性别']) ? '' : $v['性别'];
+            $employee[$k]['role'] = empty($v['权限等级']) ? '' : $v['权限等级'];
         }
+        // return $employee;
+
+        Db::startTrans();
+        try {
+            if (!empty($employee)) {
+                // $gt_mode->limit(100)->insertAll($goods);
+                Db::table('employee_temp')->limit(100)->insertAll($employee);
+            } else {
+                // Db::rollback();
+                return false;
+            }
+            //查询重复数据
+            $same = Db::view('employee')
+                ->view('employee_temp', 'real_name', 'employee.work_num = employee_temp.work_num')
+                ->select();
+            //删除表里的重复数据
+            foreach ($same as $k => $v) {
+                Db::table('employee')->where('work_num', $v['work_num'])->delete();
+            }
+            //查询临时表数据
+            //知识点:查询时忽略某个字段
+            $data = Db::table('employee_temp')->withoutField('id')->select()->toArray();
+            if (empty($data)) {
+                // Db::rollback();
+                return '临时表数据为空';
+            }
+            $res = $this->limit(100)->insertAll($data);
+            if ($res) {
+                Db::table('employee_temp')->delete(true);
+                Db::commit();
+                return true;
+            } else {
+                // Db::rollback();
+                return '插入employee表失败' . $res;
+            }
+        } catch (\Exception  $e) {
+            Db::rollback();
+            // return '插入goods表失败';
+
+            return $e->getMessage();
+        }
+    }
 
 
 

@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:15:58
- * @LastEditTime: 2020-09-14 15:26:04
+ * @LastEditTime: 2020-09-14 19:18:18
  * @LastEditors: Chenhao Xing
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\route\app.php
@@ -45,6 +45,7 @@ Route::group('login', function () {
 /********管理员 */
 Route::group('admin', function () {
     //员工信息
+    Route::post('uploadExcel', 'uploadExcel')->middleware('checkrequest', 1)->allowCrossDomain();
     Route::get('selectEmployee', 'selectEmployee')->middleware('checkrequest', 1)->allowCrossDomain();
     Route::post('updateEmployeeInfo', 'updateEmployeeInfo')->middleware('checkrequest', 1)->allowCrossDomain();
     Route::post('deleteEmployeeInfo', 'deleteEmployeeInfo')->middleware('checkrequest', 1)->allowCrossDomain();
@@ -65,7 +66,7 @@ Route::group('admin', function () {
     Route::post('reviewFeedback', 'reviewFeedback')->middleware('checkrequest', 1)->allowCrossDomain();
 
 
-
+    
 
 
     // Route::post('selectGoods', 'selectGoods')->middleware('checkrequest', 1)->allowCrossDomain();

@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-14 15:38:00
+ * @LastEditTime: 2020-09-15 12:06:54
  * @LastEditors: Chenhao Xing
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\GoodsTemp.php
@@ -19,6 +19,14 @@ use think\facade\Db;
 
 class GoodsTemp extends Model
 {
+    //批量插入
+    public function saveUpload($data){
+        return $this->saveAll($data);
+    }
+
+
+
+
     //插入报表
     public function insertGoods($dataArr)
     {
