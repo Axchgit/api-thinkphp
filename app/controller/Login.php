@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2020-09-13 02:37:41
+ * @LastEditTime: 2020-09-17 13:08:35
  * @LastEditors: Chenhao Xing
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Login.php
@@ -157,7 +157,7 @@ class Login extends Base
         $post =  request()->param();
         //实例化模型
         $emp_model = new EmpModel();
-        //获取管理员信息
+        //获取信息
         $emp_info = $emp_model->findEmployee($post['username'], $post['password']);
         $emp_role = $emp_model->getInfoByUuid($emp_info['uuid'],'role');
         //检查是否为空
