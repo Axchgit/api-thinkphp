@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-14 12:29:34
+ * @LastEditTime: 2020-09-19 17:06:54
  * @LastEditors: Chenhao Xing
  * @Description: 员工信息
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Performance.php
@@ -170,6 +170,17 @@ class Performance extends Model
         } catch (\Exception $e) {
             return $e;
         }
+    }
+
+    //获取业绩排名
+    public function getPerformanceRanking(){
+        
+        // Db::table('score')->field('user_id,SUM(score) AS sum_score')->group('user_id')->select();
+        // return $this->orderRaw()->field('uuid,count(uuid)')->group('uuid')->select();
+        // return $this->field('uuid,count(uuid)')->group('uuid')->order('count(uuid)','desc')->select();
+        return $this->field('uuid,count(uuid)')->group('uuid')->select();
+
+
     }
 
 

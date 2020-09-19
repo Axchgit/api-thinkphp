@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-14 20:34:15
+ * @LastEditTime: 2020-09-20 02:10:52
  * @LastEditors: Chenhao Xing
  * @Description: 员工信息
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Employee.php
@@ -39,6 +39,18 @@ class Employee extends Model
         $emp_uuid = $this->where('work_num', $work_num)->value('uuid');
         return Db::table('temp_code')->where('uuid', $emp_uuid)->delete();
     }
+
+    //根据键值查询员工信息
+    public function getEmployeeInfoByKey($key, $value)
+    {
+        return $this->where($key, $value)->find();
+    }
+    //根据键查询员工信息值
+    public function getEmployeeValueByKey($key, $value,$data)
+    {
+        return $this->where($key, $value)->value($data);
+    }
+
 
     /********************管理员操作 */
 
@@ -94,7 +106,7 @@ class Employee extends Model
         // $res = $this->save($data);
     }
 
-    //插入报表
+    //插入人员信息
     public function insertEmployee($dataArr)
     {
         // $gt_mode = new GoodsTempModel();
@@ -110,11 +122,10 @@ class Employee extends Model
                 $employee[$k]['uuid'] = $old['uuid'];
                 // $employee[$k]['id'] = $old['id'];
                 $employee[$k]['create_time'] = $old['create_time'];
-
             } else {
                 $employee[$k]['uuid'] = createGuid();
                 // $employee[$k]['id'] = null;
-                $employee[$k]['create_time'] = date('Y-m-d H:i:s', time()); ;
+                $employee[$k]['create_time'] = date('Y-m-d H:i:s', time());;
             }
             $employee[$k]['real_name'] = empty($v['姓名']) ? '' : $v['姓名'];
             $employee[$k]['phone'] = empty($v['手机号']) ? '' : $v['手机号'];
