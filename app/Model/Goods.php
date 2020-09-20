@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-19 21:56:55
+ * @LastEditTime: 2020-09-20 13:08:52
  * @LastEditors: Chenhao Xing
  * @Description: 
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Goods.php
@@ -213,6 +213,15 @@ class Goods extends Model
     //获取订单金额分布
     public function getOrederAmountDistribution($start,$end){
         return $this->whereBetween('payment_amount',$start.','.$end)->count();
+    }
+
+    public function getCountCommissionByGoodsId($goods_id){
+        try{
+            $sum = $this->where('goods_id',$goods_id)->sum('expec_commission');
+            return $sum;
+        }catch(\Exception  $e){
+            return 0;
+        }
     }
 
 

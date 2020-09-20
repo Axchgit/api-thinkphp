@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-20 02:48:24
+ * @LastEditTime: 2020-09-20 12:25:30
  * @LastEditors: Chenhao Xing
  * @Description: 员工信息
  * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Performance.php
@@ -172,15 +172,27 @@ class Performance extends Model
         }
     }
 
+
+    /**************DataView方法 */
+
     //获取业绩排名
-    public function getPerformanceRanking(){
-        
+    public function getPerformanceRanking()
+    {
+
         // Db::table('score')->field('user_id,SUM(score) AS sum_score')->group('user_id')->select();
         // return $this->orderRaw()->field('uuid,count(uuid)')->group('uuid')->select();
         // return $this->field('uuid,count(uuid)')->group('uuid')->order('count(uuid)','desc')->select();
         return $this->field('uuid,count(uuid)')->group('uuid')->select();
+    }
+    //获取业绩里所有uuid
+    public function getPerformanceAllUuid()
+    {
+        return $this->field('uuid')->group('uuid')->select();
+    }
 
-
+    //根据uuid查询每个uuid下的goods_id
+    public function getGoodsIdByUuid($uuid){
+        return $this->where('uuid',$uuid)->column('goods_id');
     }
 
 
