@@ -22,3 +22,15 @@ $response = $http->run();
 $response->send();
 
 $http->end($response);
+// 处理跨域需遇见请求
+if(isset($_SERVER['REQUEST_METHOD'])&&$_SERVER['REQUEST_METHOD']=='OPTIONS'){
+    // 允许的原域名
+    header('Access-Control-Allow-Origin:*');
+    //允许的请求头信息
+    header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    //允许的请求类型
+    header('Access-Control-Allow-Methods: GET, POST, PUT,DELETE,OPTIONS,PATCH');
+    //允许携带证书式访问（携带cookie）
+    header('Access-Control-Allow-Credentials:true');
+    exit;
+    }

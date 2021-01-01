@@ -2,10 +2,10 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2020-09-17 13:08:35
- * @LastEditors: Chenhao Xing
+ * @LastEditTime: 2021-01-02 03:09:09
+ * @LastEditors: 罗曼
  * @Description: 
- * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Login.php
+ * @FilePath: \testd:\wamp64\www\api-thinkphp\app\controller\Login.php
  */
 
 
@@ -192,6 +192,11 @@ class Login extends Base
         $emp_info = $emp_model->where('uuid', $res['data']->uuid)->find();
         return $this->create($emp_info);
     }
+
+    public function getQruid(){
+        
+    }
+
 
 
 }
