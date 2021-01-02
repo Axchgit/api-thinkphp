@@ -160,3 +160,66 @@ function remove_duplicate($array)
     }
     return $result;
 }
+
+//获取真实IP
+// function getClientRealIP()  
+//获取用户真实IP 
+function getClientRealIP() { 
+    if (getenv("HTTP_CLIENT_IP") && strcasecmp(getenv("HTTP_CLIENT_IP"), "unknown")) 
+        $ip = getenv("HTTP_CLIENT_IP"); 
+    else 
+        if (getenv("HTTP_X_FORWARDED_FOR") && strcasecmp(getenv("HTTP_X_FORWARDED_FOR"), "unknown")) 
+            $ip = getenv("HTTP_X_FORWARDED_FOR"); 
+        else 
+            if (getenv("REMOTE_ADDR") && strcasecmp(getenv("REMOTE_ADDR"), "unknown")) 
+                $ip = getenv("REMOTE_ADDR"); 
+            else 
+                if (isset ($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] && strcasecmp($_SERVER['REMOTE_ADDR'], "unknown")) 
+                    $ip = $_SERVER['REMOTE_ADDR']; 
+                else 
+                    $ip = "unknown"; 
+    return ($ip); 
+}
+//访问url链接
+function httpUtil($url,string $method='GET')
+    {
+        // $num=input('m');                                     //获取前台提交的手机号
+        // $host='http://showphone.market.alicloudapi.com';       //查询主机链接
+        // $path="/6-1";
+        // $querys="num=".$num;                                 //查询参数
+        // $url=$host.$path.'?'.$querys;                           //完整请求链接
+
+        $appcode='';                                       //阿里云提供的接口app码
+        $headers = array();
+        array_push($headers, "Authorization:APPCODE " . $appcode);//请求头
+
+        // $method='GET';                                               //请求方式
+
+        $curl=curl_init();                                           //初始化一个curl句柄,用于获取其它网站内容
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method); //请求方式
+        curl_setopt($curl, CURLOPT_URL, $url);   //请求url
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers); //请求头
+        curl_setopt($curl, CURLOPT_FAILONERROR, false);  //是否显示HTTP状态码
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);//执行成功返回结果
+        curl_setopt($curl, CURLOPT_HEADER, false);    //是否返回请求头信息
+        // if (1 == strpos("$".$host, "https://"))
+        // {
+        //     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);//禁止curl验证对等证书
+        //     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);//不检查证书
+        // }
+        $res=curl_exec($curl);//执行查询句柄
+        curl_close($curl);    //关闭查询连接
+        $resu=json_decode($res,true);//将json数据解码为php数组
+        return $resu;
+
+        if($resu['showapi_res_body']['ret_code']==-1){          //返回错误码，查询失败
+            // return $this->error('没有查询结果，请重新输入','Index/index');
+            return false;
+        }else{
+            return $resu;
+
+            // $this->assign('num',$num);           //将查询手机号写入模板
+            // $this->assign('res',$resu);          //将查询结果php数组写入模板
+            // return $this->fetch('index');
+        }
+    }
