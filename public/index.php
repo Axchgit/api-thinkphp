@@ -1,4 +1,12 @@
 <?php
+/*
+ * @Description: 
+ * @Author: xch
+ * @Date: 2020-09-06 03:00:08
+ * @FilePath: \testd:\wamp64\www\api-thinkphp\public\index.php
+ * @LastEditTime: 2021-01-02 16:42:31
+ * @LastEditors: xch
+ */
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
 // +----------------------------------------------------------------------
@@ -22,8 +30,6 @@ $response = $http->run();
 $response->send();
 
 $http->end($response);
-// 处理跨域需遇见请求
-if(isset($_SERVER['REQUEST_METHOD'])&&$_SERVER['REQUEST_METHOD']=='OPTIONS'){
     // 允许的原域名
     header('Access-Control-Allow-Origin:*');
     //允许的请求头信息
@@ -32,5 +38,8 @@ if(isset($_SERVER['REQUEST_METHOD'])&&$_SERVER['REQUEST_METHOD']=='OPTIONS'){
     header('Access-Control-Allow-Methods: GET, POST, PUT,DELETE,OPTIONS,PATCH');
     //允许携带证书式访问（携带cookie）
     header('Access-Control-Allow-Credentials:true');
+// 处理跨域需遇见请求
+if(isset($_SERVER['REQUEST_METHOD'])&&$_SERVER['REQUEST_METHOD']=='OPTIONS'){
+
     exit;
     }
