@@ -2,8 +2,8 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2021-01-02 03:09:09
- * @LastEditors: 罗曼
+ * @LastEditTime: 2021-01-02 18:01:33
+ * @LastEditors: xch
  * @Description: 
  * @FilePath: \testd:\wamp64\www\api-thinkphp\app\controller\Login.php
  */
@@ -17,6 +17,7 @@ namespace app\controller;
 use think\Request;
 use app\model\Admin as AdminModel;
 use app\model\EmployeeLogin as EmpModel;
+use app\model\Auth as AuthModel;
 
 use think\facade\Db;
 
@@ -62,8 +63,8 @@ class Login extends Base
         $admin_model = new AdminModel();
         //删除之前的登录码
         $res = $admin_model->deleteLogcode($post['username']);
-        if($res === false){
-            return $this->create('', '找不到该用户,请检查用户名是否正确'.$res, 204);
+        if ($res === false) {
+            return $this->create('', '找不到该用户,请检查用户名是否正确' . $res, 204);
         }
         //保存登录码信息到临时表
         $res =  $admin_model->saveLogCode($post['username'], $log_code);
@@ -146,7 +147,7 @@ class Login extends Base
             } else {
                 return $this->create('', '验证码错误', 204);
             }
-        }else{
+        } else {
             return $this->create('', '账户或密码错误', 204);
         }
     }
@@ -159,7 +160,7 @@ class Login extends Base
         $emp_model = new EmpModel();
         //获取信息
         $emp_info = $emp_model->findEmployee($post['username'], $post['password']);
-        $emp_role = $emp_model->getInfoByUuid($emp_info['uuid'],'role');
+        $emp_role = $emp_model->getInfoByUuid($emp_info['uuid'], 'role');
         //检查是否为空
         if (!empty($emp_info) && !empty($emp_role)) {
             $token = signToken($emp_info['uuid'], $emp_role);
@@ -180,12 +181,13 @@ class Login extends Base
             } else {
                 return $this->create('', '未知错误', 204);
             }
-        }else{
+        } else {
             return $this->create('', '账户或密码错误', 204);
         }
     }
 
-    public function selectEmpInfo(Request $request){
+    public function selectEmpInfo(Request $request)
+    {
         $emp_model = new EmpModel();
         $res = $request->data;
         // $emp_info = $emp_model->getAcInfo($res['data']->uuid);
@@ -193,10 +195,47 @@ class Login extends Base
         return $this->create($emp_info);
     }
 
-    public function getQruid(){
-        
+    //获取qruid
+    public function getQruid()
+    {
+        $auth_model = new AuthModel();
+
+        $ip = getClientRealIP();
+        $fakeip = "49.74.160.84";
+        $qruid = str_replace("-","",createGuid());
+        $url = "http://api.map.baidu.com/location/ip?ip=" . $fakeip . "&ak=nSxiPohfziUaCuONe4ViUP2N&coor=bd09ll";
+        $address_res = httpUtil($url);
+        if ($address_res['status'] === 0 && $address_res != null) {
+            $address =  $address_res['content']['address'];
+        } else {
+            $address = '江苏省南京市';
+        }
+        // $qruid = createGuid();
+        $res = $auth_model->createAuth($qruid, $ip, $address);
+        if ($res === true) {
+            return $this->create(['qruid' => $qruid, 'status' => 0]);
+        } else {
+            return $this->create(['status' => 1], '获取验证码失败');
+        }
+        // return json_decode($address,true);
+
     }
 
+    public function getAuthInfo($qruid, $userUuid = '', $isScan = '')
+    {
+        $auth_model = new AuthModel();
 
-
+        // return 1234;
+        $auth_info = $auth_model->findAuth($qruid);
+        if ($auth_info === null) {
+            return $this->create('', '获取口令信息失败', 204);
+        }
+        if ($isScan && ($auth_info['auth_state'] === 0 || $auth_info['auth_state'] === 2)) {
+            $auth_update_res = $auth_model->updateAuth($qruid, 2, $userUuid);
+            if ($auth_update_res !== true) {
+                return $this->create('', '更新口令信息失败', 204);
+            }
+        }
+        return $this->create($auth_info, '获取成功');
+    }
 }

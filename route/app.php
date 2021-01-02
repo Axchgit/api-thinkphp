@@ -2,10 +2,10 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:15:58
- * @LastEditTime: 2020-09-14 19:18:18
- * @LastEditors: Chenhao Xing
+ * @LastEditTime: 2021-01-02 17:26:28
+ * @LastEditors: xch
  * @Description: 
- * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\route\app.php
+ * @FilePath: \testd:\wamp64\www\api-thinkphp\route\app.php
  */
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
@@ -32,6 +32,7 @@ Route::get('test/testfive', 'Test/testFive')->middleware('checkrequest', 6)->all
 
 /****登录模块*****/
 Route::group('login', function () {
+    Route::get('<qruid>/<userUuid?>/<isScan?>','getAuthInfo');
     //发送验证码请求
     Route::get('/', 'sendAdminCode')->allowCrossDomain();
     //验证登录请求
