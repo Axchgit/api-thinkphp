@@ -2,10 +2,10 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-12 02:49:07
- * @LastEditors: Chenhao Xing
+ * @LastEditTime: 2021-01-03 03:34:14
+ * @LastEditors: xch
  * @Description: 
- * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\EmployeeLogin.php
+ * @FilePath: \testd:\wamp64\www\api-thinkphp\app\Model\EmployeeLogin.php
  */
 
 namespace app\model;
@@ -150,6 +150,11 @@ class EmployeeLogin extends Model
     public function getAcInfo($emp_uuid)
     {
         return $this->where('uuid', $emp_uuid)->select();
+    }
+
+    public function getAcInfoByUuid($emp_uuid)
+    {
+        return $this->where('uuid', $emp_uuid)->find();
     }
 
     public function updatePW($uuid, $new_password)

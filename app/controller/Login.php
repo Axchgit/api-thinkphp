@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2021-01-02 18:01:33
+ * @LastEditTime: 2021-01-03 19:41:02
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \testd:\wamp64\www\api-thinkphp\app\controller\Login.php
@@ -16,6 +16,7 @@ namespace app\controller;
 // use think\facade\Request;
 use think\Request;
 use app\model\Admin as AdminModel;
+use app\model\Employee as EmployeeModel;
 use app\model\EmployeeLogin as EmpModel;
 use app\model\Auth as AuthModel;
 
@@ -224,6 +225,7 @@ class Login extends Base
     public function getAuthInfo($qruid, $userUuid = '', $isScan = '')
     {
         $auth_model = new AuthModel();
+        $employee_model = new EmployeeModel();
 
         // return 1234;
         $auth_info = $auth_model->findAuth($qruid);
@@ -236,6 +238,56 @@ class Login extends Base
                 return $this->create('', '更新口令信息失败', 204);
             }
         }
+        if(!$isScan && $auth_info['auth_state'] === 1){
+            $emp_info = $employee_model->getEmployeeInfoByKey('uuid', $userUuid);
+            // $emp_role = $emp_model->getInfoByUuid($emp_info['uuid'], 'role');
+            $token = signToken($emp_info['uuid'], $emp_info['role']);
+            $auth_info['token']=$token;
+            $auth_info['role']=$emp_info['role'];
+            // $auth_info['token']=$token;            
+        }
         return $this->create($auth_info, '获取成功');
     }
+
+
+    public function phoneUserLogin(){
+        $post =  request()->param();
+        
+        $employee_model = new EmployeeModel();
+
+        $emp_model = new EmpModel();
+
+        $emp_info = $employee_model->getEmployeeInfoByKey('work_num',$post['userId']);
+        $ea_info = $emp_model->getAcInfoByUuid($emp_info['uuid']);
+        // return $this->create($emp_info, '获取成功');
+
+        // @Result(property = "userId", column = "user_id"),
+        // @Result(property = "userPassword", column = "user_password"),
+        // @Result(property = "userName", column = "user_name"),
+        // @Result(property = "userAvatar", column = "user_avatar"),
+        // @Result(property = "userPhone", column = "user_phone")
+
+        $user_info=[
+            'userId'=>$emp_info['work_num'],
+            'userPassword'=>$ea_info['password'],
+            'userName'=>$ea_info['nick_name'],
+            'userAvatar'=>$ea_info['avatar'],
+            'userPhone'=>$emp_info['phone']
+
+        ];
+
+        return $this->create($user_info, '获取成功');
+
+        
+    }
+
+
+
+
+
+
+
+
+
+    //over
 }
