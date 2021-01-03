@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2021-01-03 19:41:02
+ * @LastEditTime: 2021-01-04 04:59:03
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \testd:\wamp64\www\api-thinkphp\app\controller\Login.php
@@ -203,7 +203,7 @@ class Login extends Base
 
         $ip = getClientRealIP();
         $fakeip = "49.74.160.84";
-        $qruid = str_replace("-","",createGuid());
+        $qruid = str_replace("-", "", createGuid());
         $url = "http://api.map.baidu.com/location/ip?ip=" . $fakeip . "&ak=nSxiPohfziUaCuONe4ViUP2N&coor=bd09ll";
         $address_res = httpUtil($url);
         if ($address_res['status'] === 0 && $address_res != null) {
@@ -222,10 +222,15 @@ class Login extends Base
 
     }
 
-    public function getAuthInfo($qruid, $userUuid = '', $isScan = '')
+    public function getAuthInfo($qruid)
     {
         $auth_model = new AuthModel();
         $employee_model = new EmployeeModel();
+        $post =  request()->param();
+        $user_uuid = !empty($post['user_uuid']) ? $post['user_uuid'] : '';
+        $isScan = !empty($post['isScan']) ? $post['isScan'] : false;
+
+
 
         // return 1234;
         $auth_info = $auth_model->findAuth($qruid);
@@ -233,31 +238,45 @@ class Login extends Base
             return $this->create('', '获取口令信息失败', 204);
         }
         if ($isScan && ($auth_info['auth_state'] === 0 || $auth_info['auth_state'] === 2)) {
-            $auth_update_res = $auth_model->updateAuth($qruid, 2, $userUuid);
+            $auth_update_res = $auth_model->updateAuth($qruid, 2, $user_uuid);
             if ($auth_update_res !== true) {
-                return $this->create('', '更新口令信息失败', 204);
+                return $this->create($auth_info, '更新口令信息失败', 204);
             }
+            $test = [
+                'qruid' => $auth_info['qruid'],
+                'auth_time'=>substr($auth_info['auth_time'],0,10),
+                'auth_ip' => $auth_info['auth_ip'],
+                'auth_address' => $auth_info['auth_address'],
+                'auth_state' => $auth_info['auth_state'],
+                'user_uuid' => $user_uuid
+
+
+                // 'auth_address' => '江苏南京'
+            ];
+            return $this->create($test, '获取成功');
         }
-        if(!$isScan && $auth_info['auth_state'] === 1){
-            $emp_info = $employee_model->getEmployeeInfoByKey('uuid', $userUuid);
+        if (!$isScan && $auth_info['auth_state'] === 1) {
+            $emp_info = $employee_model->getEmployeeInfoByKey('uuid', $auth_info['user_uuid']);
             // $emp_role = $emp_model->getInfoByUuid($emp_info['uuid'], 'role');
             $token = signToken($emp_info['uuid'], $emp_info['role']);
-            $auth_info['token']=$token;
-            $auth_info['role']=$emp_info['role'];
+            $auth_info['token'] = $token;
+            $auth_info['role'] = $emp_info['role'];
             // $auth_info['token']=$token;            
         }
+
         return $this->create($auth_info, '获取成功');
     }
 
 
-    public function phoneUserLogin(){
+    public function getUserInfo()
+    {
         $post =  request()->param();
-        
+
         $employee_model = new EmployeeModel();
 
         $emp_model = new EmpModel();
 
-        $emp_info = $employee_model->getEmployeeInfoByKey('work_num',$post['userId']);
+        $emp_info = $employee_model->getEmployeeInfoByKey('work_num', $post['userId']);
         $ea_info = $emp_model->getAcInfoByUuid($emp_info['uuid']);
         // return $this->create($emp_info, '获取成功');
 
@@ -267,18 +286,16 @@ class Login extends Base
         // @Result(property = "userAvatar", column = "user_avatar"),
         // @Result(property = "userPhone", column = "user_phone")
 
-        $user_info=[
-            'userId'=>$emp_info['work_num'],
-            'userPassword'=>$ea_info['password'],
-            'userName'=>$ea_info['nick_name'],
-            'userAvatar'=>$ea_info['avatar'],
-            'userPhone'=>$emp_info['phone']
+        $user_info = [
+            'work_num' => $emp_info['work_num'],
+            'password' => $ea_info['password'],
+            'nick_name' => $ea_info['nick_name'],
+            'avatar' => $ea_info['avatar'],
+            'phone' => $emp_info['phone']
 
         ];
 
         return $this->create($user_info, '获取成功');
-
-        
     }
 
 
