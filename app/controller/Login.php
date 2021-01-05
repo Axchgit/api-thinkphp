@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2021-01-04 04:59:03
+ * @LastEditTime: 2021-01-06 00:07:35
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \testd:\wamp64\www\api-thinkphp\app\controller\Login.php
@@ -226,6 +226,8 @@ class Login extends Base
     {
         $auth_model = new AuthModel();
         $employee_model = new EmployeeModel();
+        $emp_model = new EmpModel();
+
         $post =  request()->param();
         $user_uuid = !empty($post['user_uuid']) ? $post['user_uuid'] : '';
         $isScan = !empty($post['isScan']) ? $post['isScan'] : false;
@@ -244,7 +246,9 @@ class Login extends Base
             }
             $test = [
                 'qruid' => $auth_info['qruid'],
-                'auth_time'=>substr($auth_info['auth_time'],0,10),
+                // 'auth_time' => substr($auth_info['auth_time'], 0, 10),
+                'auth_time' => strtotime($auth_info['auth_time'])*1000,
+
                 'auth_ip' => $auth_info['auth_ip'],
                 'auth_address' => $auth_info['auth_address'],
                 'auth_state' => $auth_info['auth_state'],
@@ -256,11 +260,13 @@ class Login extends Base
             return $this->create($test, '获取成功');
         }
         if (!$isScan && $auth_info['auth_state'] === 1) {
-            $emp_info = $employee_model->getEmployeeInfoByKey('uuid', $auth_info['user_uuid']);
-            // $emp_role = $emp_model->getInfoByUuid($emp_info['uuid'], 'role');
+            $emp_info = $employee_model->getEmployeeInfoByKey('work_num', $auth_info['user_uuid']);
             $token = signToken($emp_info['uuid'], $emp_info['role']);
             $auth_info['token'] = $token;
             $auth_info['role'] = $emp_info['role'];
+            $auth_info['uuid'] = $emp_info['uuid'];
+
+
             // $auth_info['token']=$token;            
         }
 
@@ -271,21 +277,10 @@ class Login extends Base
     public function getUserInfo()
     {
         $post =  request()->param();
-
         $employee_model = new EmployeeModel();
-
         $emp_model = new EmpModel();
-
         $emp_info = $employee_model->getEmployeeInfoByKey('work_num', $post['userId']);
         $ea_info = $emp_model->getAcInfoByUuid($emp_info['uuid']);
-        // return $this->create($emp_info, '获取成功');
-
-        // @Result(property = "userId", column = "user_id"),
-        // @Result(property = "userPassword", column = "user_password"),
-        // @Result(property = "userName", column = "user_name"),
-        // @Result(property = "userAvatar", column = "user_avatar"),
-        // @Result(property = "userPhone", column = "user_phone")
-
         $user_info = [
             'work_num' => $emp_info['work_num'],
             'password' => $ea_info['password'],
@@ -297,6 +292,56 @@ class Login extends Base
 
         return $this->create($user_info, '获取成功');
     }
+
+    //手机端确认二维码登录
+    public function phoneConfirmLogin($qruid)
+    {
+        $post =  request()->param();
+        $auth_model = new AuthModel();
+        $auth_state = 3;
+        $auth_info = $auth_model->findAuth($qruid);
+        //判断获取二维码信息是否成功
+        if ($auth_info === null) {
+            return $this->create(['state' => 2], '获取口令信息失败', 204);
+        }
+        $auth_state = $auth_info['auth_state'];
+        $auth_time_timestamp = strtotime($auth_info['auth_time']);
+        //判断二维码是否超时
+        // return $this->create([$auth_time_timestamp,time()], '登录码过期', 204);
+        if ($auth_time_timestamp + 30 <= time()) {
+            return $this->create(['state' => 3], '登录码过期', 204);
+        }
+        //判断二维码存储信息是否对应
+        if ($post['work_num'] === $auth_info['user_uuid'] && ($auth_state === 0 || $auth_state === 2)) {
+            $auth_update_res = $auth_model->updateAuth($qruid, 1, $auth_info['user_uuid']);
+            if ($auth_update_res !== true) {
+                return $this->create(['state' => 0], '更新口令信息失败', 204);
+            }
+            return $this->create(['state' => 1], '确认登录成功');
+        } else {
+            return $this->create(['state' => 4], '口令信息错误', 204);
+        }
+    }
+
+    //手机端登录
+    public function phoneLogin(){
+        $post =  request()->param();
+        $employee_model = new EmployeeModel();
+        $emp_model = new EmpModel();
+        $emp_info = $employee_model->getEmployeeInfoByKey('work_num', $post['userId']);
+        $ea_info = $emp_model->getAcInfoByUuid($emp_info['uuid']);
+        $user_info = [
+            'work_num' => $emp_info['work_num'],
+            'password' => $ea_info['password'],
+            'nick_name' => $ea_info['nick_name'],
+            'avatar' => $ea_info['avatar'],
+            'phone' => $emp_info['phone']
+
+        ];
+
+        return $this->create($user_info, '获取成功');
+    }
+
 
 
 

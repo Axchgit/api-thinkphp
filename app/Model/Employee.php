@@ -2,10 +2,10 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-20 02:10:52
- * @LastEditors: Chenhao Xing
+ * @LastEditTime: 2021-01-04 22:42:49
+ * @LastEditors: xch
  * @Description: 员工信息
- * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Employee.php
+ * @FilePath: \testd:\wamp64\www\api-thinkphp\app\Model\Employee.php
  */
 
 namespace app\model;
@@ -49,6 +49,12 @@ class Employee extends Model
     public function getEmployeeValueByKey($key, $value,$data)
     {
         return $this->where($key, $value)->value($data);
+    }
+
+    //根据uuid查询单个信息
+    public function getEmployeeKeyInfoByUuid($uuid, $key){
+        return $this->where('uuid', $uuid)->value($key);
+
     }
 
 

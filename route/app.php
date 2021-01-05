@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:15:58
- * @LastEditTime: 2021-01-04 02:24:09
+ * @LastEditTime: 2021-01-04 19:33:42
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \testd:\wamp64\www\api-thinkphp\route\app.php
@@ -33,6 +33,9 @@ Route::get('test/testfive', 'Test/testFive')->middleware('checkrequest', 6)->all
 /****登录模块*****/
 Route::group('login', function () {
     Route::rule('getAuthInfo/<qruid>/<userUuid?>/<isScan?>','getAuthInfo');
+    Route::rule('phoneConfirmLogin/<qruid>','phoneConfirmLogin');
+
+    
     //发送验证码请求
     Route::get('/', 'sendAdminCode')->allowCrossDomain();
     //验证登录请求
