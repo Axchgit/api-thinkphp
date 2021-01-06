@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2021-01-06 00:07:35
+ * @LastEditTime: 2021-01-07 04:37:50
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \testd:\wamp64\www\api-thinkphp\app\controller\Login.php
@@ -17,7 +17,7 @@ namespace app\controller;
 use think\Request;
 use app\model\Admin as AdminModel;
 use app\model\Employee as EmployeeModel;
-use app\model\EmployeeLogin as EmpModel;
+use app\model\EmployeeLogin as EmployeeLoginModel;
 use app\model\Auth as AuthModel;
 
 use think\facade\Db;
@@ -158,21 +158,24 @@ class Login extends Base
         //获取请求信息
         $post =  request()->param();
         //实例化模型
-        $emp_model = new EmpModel();
+        $ea_model = new EmployeeLoginModel();
+        // if(!empty($post['is_phone']) && $post['isPhone'] ===true){
+
+        // }
         //获取信息
-        $emp_info = $emp_model->findEmployee($post['username'], $post['password']);
-        $emp_role = $emp_model->getInfoByUuid($emp_info['uuid'], 'role');
+        $ea_info = $ea_model->findEmployee($post['username'], $post['password']);
+        $emp_role = $ea_model->getInfoByUuid($ea_info['uuid'], 'role');
         //检查是否为空
-        if (!empty($emp_info) && !empty($emp_role)) {
-            $token = signToken($emp_info['uuid'], $emp_role);
+        if (!empty($ea_info) && !empty($emp_role)) {
+            $token = signToken($ea_info['uuid'], $emp_role);
             $data = [
                 'token' => $token,
-                'uuid' => $emp_info['uuid'],
+                'uuid' => $ea_info['uuid'],
                 'role' => $emp_role
             ];
             //添加登录记录
             $records = [
-                'uuid' => $emp_info['uuid'],
+                'uuid' => $ea_info['uuid'],
                 'login_time' => time(),
                 'login_ip' => request()->host()
             ];
@@ -189,7 +192,7 @@ class Login extends Base
 
     public function selectEmpInfo(Request $request)
     {
-        $emp_model = new EmpModel();
+        $emp_model = new EmployeeLoginModel();
         $res = $request->data;
         // $emp_info = $emp_model->getAcInfo($res['data']->uuid);
         $emp_info = $emp_model->where('uuid', $res['data']->uuid)->find();
@@ -216,7 +219,7 @@ class Login extends Base
         if ($res === true) {
             return $this->create(['qruid' => $qruid, 'status' => 0]);
         } else {
-            return $this->create(['status' => 1], '获取验证码失败');
+            return $this->create(['status' => 1,$res], '获取验证码失败');
         }
         // return json_decode($address,true);
 
@@ -226,7 +229,7 @@ class Login extends Base
     {
         $auth_model = new AuthModel();
         $employee_model = new EmployeeModel();
-        $emp_model = new EmpModel();
+        $emp_model = new EmployeeLoginModel();
 
         $post =  request()->param();
         $user_uuid = !empty($post['user_uuid']) ? $post['user_uuid'] : '';
@@ -247,7 +250,7 @@ class Login extends Base
             $test = [
                 'qruid' => $auth_info['qruid'],
                 // 'auth_time' => substr($auth_info['auth_time'], 0, 10),
-                'auth_time' => strtotime($auth_info['auth_time'])*1000,
+                'auth_time' => strtotime($auth_info['auth_time']) * 1000,
 
                 'auth_ip' => $auth_info['auth_ip'],
                 'auth_address' => $auth_info['auth_address'],
@@ -278,8 +281,8 @@ class Login extends Base
     {
         $post =  request()->param();
         $employee_model = new EmployeeModel();
-        $emp_model = new EmpModel();
-        $emp_info = $employee_model->getEmployeeInfoByKey('work_num', $post['userId']);
+        $emp_model = new EmployeeLoginModel();
+        $emp_info = $employee_model->getEmployeeInfoByKey('work_num', $post['workNum']);
         $ea_info = $emp_model->getAcInfoByUuid($emp_info['uuid']);
         $user_info = [
             'work_num' => $emp_info['work_num'],
@@ -296,6 +299,7 @@ class Login extends Base
     //手机端确认二维码登录
     public function phoneConfirmLogin($qruid)
     {
+        // return $this->create('', '令牌不存在', 304);
         $post =  request()->param();
         $auth_model = new AuthModel();
         $auth_state = 3;
@@ -324,24 +328,50 @@ class Login extends Base
     }
 
     //手机端登录
-    public function phoneLogin(){
+    public function phoneLogin()
+    {
+        //获取请求信息
         $post =  request()->param();
+        //实例化模型
+        $ea_model = new EmployeeLoginModel();
+        // $post =  request()->param();
         $employee_model = new EmployeeModel();
-        $emp_model = new EmpModel();
-        $emp_info = $employee_model->getEmployeeInfoByKey('work_num', $post['userId']);
-        $ea_info = $emp_model->getAcInfoByUuid($emp_info['uuid']);
-        $user_info = [
-            'work_num' => $emp_info['work_num'],
-            'password' => $ea_info['password'],
-            'nick_name' => $ea_info['nick_name'],
-            'avatar' => $ea_info['avatar'],
-            'phone' => $emp_info['phone']
+        // $emp_model = new EmployeeLoginModel();
 
-        ];
-
-        return $this->create($user_info, '获取成功');
+        $emp_info = $employee_model->getEmployeeInfoByKey('work_num', $post['work_num']);
+        $ea_all_info = $ea_model->getAcInfoByUuid($emp_info['uuid']);
+        $ea_info = $ea_model->findEmployee($ea_all_info['nick_name'], $post['password']);
+        //检查是否为空
+        if (!empty($ea_info) && !empty($emp_info['role'])) {
+            $token = signToken($ea_info['uuid'], $emp_info['role']);
+            $user_info = [
+                'user_token' => $token,
+                // 'uuid' => $ea_info['uuid'],
+                'role' => $emp_info['role'],
+                'work_num' => $emp_info['work_num'],
+                'password' => $ea_info['password'],
+                'nick_name' => $ea_info['nick_name'],
+                'avatar' => $ea_info['avatar'],
+                'phone' => $emp_info['phone']
+    
+            ];
+            //添加登录记录
+            $records = [
+                'uuid' => $ea_info['uuid'],
+                'login_time' => time(),
+                'login_ip' => request()->host(),
+                'login_platform' => 2
+            ];
+            if (Db::table('login_record')->insert($records)) {
+                //成功返回token及uuid
+                return $this->create($user_info, '登录成功');
+            } else {
+                return $this->create('', '未知错误', 204);
+            }
+        } else {
+            return $this->create('', '账户或密码错误', 204);
+        }
     }
-
 
 
 
