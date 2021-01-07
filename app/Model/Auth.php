@@ -1,4 +1,12 @@
 <?php
+/*
+ * @Description: 
+ * @Author: xch
+ * @Date: 2021-01-02 13:38:30
+ * @FilePath: \testd:\wamp64\www\api-thinkphp\app\Model\Auth.php
+ * @LastEditTime: 2021-01-07 16:44:32
+ * @LastEditors: xch
+ */
 namespace app\model;
 
 // use PHPExcel_IOFactory;
@@ -29,7 +37,7 @@ class Auth extends Model
     //更新状态
     public function updateAuth($qruid,$auth_state,$user_uuid){
         try {
-            $this->update(['auth_state' => $auth_state,'user_uuid'=>$user_uuid], ['qruid' => $qruid]);
+            $this->update(['auth_state' => $auth_state,'work_num'=>$user_uuid], ['qruid' => $qruid]);
             return true;
         } catch (\Exception $e) {
             return $e->getMessage();

@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2021-01-07 04:37:50
+ * @LastEditTime: 2021-01-07 16:44:16
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \testd:\wamp64\www\api-thinkphp\app\controller\Login.php
@@ -232,7 +232,7 @@ class Login extends Base
         $emp_model = new EmployeeLoginModel();
 
         $post =  request()->param();
-        $user_uuid = !empty($post['user_uuid']) ? $post['user_uuid'] : '';
+        $work_num = !empty($post['work_num']) ? $post['work_num'] : '';
         $isScan = !empty($post['isScan']) ? $post['isScan'] : false;
 
 
@@ -243,7 +243,7 @@ class Login extends Base
             return $this->create('', '获取口令信息失败', 204);
         }
         if ($isScan && ($auth_info['auth_state'] === 0 || $auth_info['auth_state'] === 2)) {
-            $auth_update_res = $auth_model->updateAuth($qruid, 2, $user_uuid);
+            $auth_update_res = $auth_model->updateAuth($qruid, 2, $work_num);
             if ($auth_update_res !== true) {
                 return $this->create($auth_info, '更新口令信息失败', 204);
             }
@@ -255,7 +255,7 @@ class Login extends Base
                 'auth_ip' => $auth_info['auth_ip'],
                 'auth_address' => $auth_info['auth_address'],
                 'auth_state' => $auth_info['auth_state'],
-                'user_uuid' => $user_uuid
+                'work_num' => $work_num
 
 
                 // 'auth_address' => '江苏南京'
@@ -268,8 +268,6 @@ class Login extends Base
             $auth_info['token'] = $token;
             $auth_info['role'] = $emp_info['role'];
             $auth_info['uuid'] = $emp_info['uuid'];
-
-
             // $auth_info['token']=$token;            
         }
 
@@ -288,7 +286,9 @@ class Login extends Base
             'work_num' => $emp_info['work_num'],
             'password' => $ea_info['password'],
             'nick_name' => $ea_info['nick_name'],
-            'avatar' => $ea_info['avatar'],
+            // 'avatar' => $ea_info['avatar'],
+            'avatar' => "http://phone.xchtzon.top/images/avatar/avatar_def.png",
+
             'phone' => $emp_info['phone']
 
         ];
@@ -351,7 +351,10 @@ class Login extends Base
                 'work_num' => $emp_info['work_num'],
                 'password' => $ea_info['password'],
                 'nick_name' => $ea_info['nick_name'],
-                'avatar' => $ea_info['avatar'],
+                // 'avatar' => $ea_info['avatar'],
+                'avatar' => "http://phone.xchtzon.top/images/avatar/avatar_def.png",
+
+                
                 'phone' => $emp_info['phone']
     
             ];
