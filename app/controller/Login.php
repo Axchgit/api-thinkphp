@@ -2,10 +2,10 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2021-01-07 16:44:16
+ * @LastEditTime: 2021-01-27 16:59:39
  * @LastEditors: xch
  * @Description: 
- * @FilePath: \testd:\wamp64\www\api-thinkphp\app\controller\Login.php
+ * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\controller\Login.php
  */
 
 
@@ -196,6 +196,8 @@ class Login extends Base
         $res = $request->data;
         // $emp_info = $emp_model->getAcInfo($res['data']->uuid);
         $emp_info = $emp_model->where('uuid', $res['data']->uuid)->find();
+        // return $this->create($res['data'],'',204);
+
         return $this->create($emp_info);
     }
 
@@ -263,7 +265,7 @@ class Login extends Base
             return $this->create($test, '获取成功');
         }
         if (!$isScan && $auth_info['auth_state'] === 1) {
-            $emp_info = $employee_model->getEmployeeInfoByKey('work_num', $auth_info['user_uuid']);
+            $emp_info = $employee_model->getEmployeeInfoByKey('work_num', $auth_info['work_num']);
             $token = signToken($emp_info['uuid'], $emp_info['role']);
             $auth_info['token'] = $token;
             $auth_info['role'] = $emp_info['role'];
@@ -287,7 +289,7 @@ class Login extends Base
             'password' => $ea_info['password'],
             'nick_name' => $ea_info['nick_name'],
             // 'avatar' => $ea_info['avatar'],
-            'avatar' => "http://phone.xchtzon.top/images/avatar/avatar_def.png",
+            'avatar' => "http://phone.xchtzon.top/images/avatar/avatar_def5.jpg",
 
             'phone' => $emp_info['phone']
 
@@ -316,14 +318,14 @@ class Login extends Base
             return $this->create(['state' => 3], '登录码过期', 204);
         }
         //判断二维码存储信息是否对应
-        if ($post['work_num'] === $auth_info['user_uuid'] && ($auth_state === 0 || $auth_state === 2)) {
-            $auth_update_res = $auth_model->updateAuth($qruid, 1, $auth_info['user_uuid']);
+        if ($post['work_num'] === $auth_info['work_num'] && ($auth_state === 0 || $auth_state === 2)) {
+            $auth_update_res = $auth_model->updateAuth($qruid, 1, $auth_info['work_num']);
             if ($auth_update_res !== true) {
                 return $this->create(['state' => 0], '更新口令信息失败', 204);
             }
             return $this->create(['state' => 1], '确认登录成功');
         } else {
-            return $this->create(['state' => 4], '口令信息错误', 204);
+            return $this->create(['state' => 4], '口令信息错误'.$post['work_num']===$auth_info['work_num'].'-'.$auth_state, 204);
         }
     }
 
@@ -352,7 +354,7 @@ class Login extends Base
                 'password' => $ea_info['password'],
                 'nick_name' => $ea_info['nick_name'],
                 // 'avatar' => $ea_info['avatar'],
-                'avatar' => "http://phone.xchtzon.top/images/avatar/avatar_def.png",
+                'avatar' => "http://phone.xchtzon.top/images/avatar/avatar_def5.jpg",
 
                 
                 'phone' => $emp_info['phone']
