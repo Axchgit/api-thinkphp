@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2021-01-27 16:59:39
+ * @LastEditTime: 2021-01-29 02:35:55
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\controller\Login.php
@@ -209,7 +209,7 @@ class Login extends Base
         $ip = getClientRealIP();
         $fakeip = "49.74.160.84";
         $qruid = str_replace("-", "", createGuid());
-        $url = "http://api.map.baidu.com/location/ip?ip=" . $fakeip . "&ak=nSxiPohfziUaCuONe4ViUP2N&coor=bd09ll";
+        $url = "http://api.map.baidu.com/location/ip?ip=" . $ip . "&ak=nSxiPohfziUaCuONe4ViUP2N&coor=bd09ll";
         $address_res = httpUtil($url);
         if ($address_res['status'] === 0 && $address_res != null) {
             $address =  $address_res['content']['address'];
