@@ -2,10 +2,10 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:15:58
- * @LastEditTime: 2021-01-07 03:16:50
+ * @LastEditTime: 2021-04-02 18:29:42
  * @LastEditors: xch
  * @Description: 
- * @FilePath: \testd:\wamp64\www\api-thinkphp\route\app.php
+ * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\route\app.php
  */
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK ]
@@ -29,6 +29,8 @@ Route::get('test/testthree', 'Test/testThree')->middleware('checkrequest', 6)->a
 Route::get('test/testone', 'Test/testOne')->middleware('checkrequest', 6)->allowCrossDomain();
 
 Route::get('test/testfive', 'Test/testFive')->middleware('checkrequest', 6)->allowCrossDomain();
+Route::get('test/testtwo', 'Test/testTwo')->allowCrossDomain();
+
 
 /****登录模块*****/
 Route::group('login', function () {

@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2021-01-29 02:35:55
+ * @LastEditTime: 2021-04-03 10:12:58
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\controller\Login.php
@@ -289,7 +289,7 @@ class Login extends Base
             'password' => $ea_info['password'],
             'nick_name' => $ea_info['nick_name'],
             // 'avatar' => $ea_info['avatar'],
-            'avatar' => "http://phone.xchtzon.top/images/avatar/avatar_def5.jpg",
+            'avatar' => "http://api.xchtzon.top/images/avatar/avatar_def5.jpg",
 
             'phone' => $emp_info['phone']
 
@@ -354,7 +354,7 @@ class Login extends Base
                 'password' => $ea_info['password'],
                 'nick_name' => $ea_info['nick_name'],
                 // 'avatar' => $ea_info['avatar'],
-                'avatar' => "http://phone.xchtzon.top/images/avatar/avatar_def5.jpg",
+                'avatar' => "http://api.xchtzon.top/images/avatar/avatar_def5.jpg",
 
                 
                 'phone' => $emp_info['phone']
