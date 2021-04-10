@@ -4,7 +4,7 @@
  * @Author: xch
  * @Date: 2020-09-06 03:00:08
  * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\controller\Index.php
- * @LastEditTime: 2021-04-10 18:23:28
+ * @LastEditTime: 2021-04-10 23:47:39
  * @LastEditors: xch
  */
 
@@ -15,6 +15,8 @@ use think\Request;
 
 use app\model\LoginRecord as LoginRecordModel;
 use app\model\EmployeeLogin as EmployeeLoginModel;
+use app\model\Employee as EmployeeModel;
+use app\model\TempCode as TempCodeModel;
 
 
 
@@ -63,6 +65,60 @@ class Index extends Base
         } catch (\think\exception\ValidateException $e) {
             return $this->create('', $e->getMessage(), 204);
         }
+    }
+
+        /**
+     * @description: 发送邮箱验证码
+     * @param {type} 
+     * @return {type} 
+     */
+    public function sendEmployeeEmailCode(Request $request)
+    {
+        $post =  request()->param();
+        $tooken_res = $request->data;
+
+        $uuid = $tooken_res['data']->uuid;
+        $employee_model = new EmployeeModel();
+        $code_model = new TempCodeModel();
+
+        //PHP获得随机数-验证码
+        $v_code = rand(111111, 999999);
+        //PHP获取时间戳
+        $time = time();
+        //拼接时间戳与登录码
+        $log_code = (string)$time . (string)$v_code;
+
+        //删除之前的验证码
+        $code_model->deleteCode($uuid);
+        //保存登录码信息到临时表
+        $res =  $code_model->saveCode($uuid, $log_code, $post['msg'] . '验证码');
+        //字符串截取指定片段
+        $v_code = substr($log_code, 10, 6);
+        //查询账户对应email
+        $employee_info = $employee_model->getEmployeeInfoByKey('uuid',$uuid);
+
+        // $person_email = $person_model->getInfoByNumber($post['number'], 'email');
+        $title = '验证码';
+        // $data = json_decode($string, true);
+        $content = emailHtmlModel($employee_info['real_name'], $v_code, $post['msg']);
+        // return $this->create($content);
+
+        // $content = '你好, <b>' . $person_info['name'] . '</b>管理员! <br/>这是一封来自河池学院党支部的邮件！<br/><span>你正在登录管理员账户,你的验证码是:' . (string)$v_code;
+
+        // $content = '你好, <b>朋友</b>! <br/><br/><span>你的验证码是:' . (string)$code;
+        if ($res === true) {
+            if (sendMail($employee_info['email'], $title, $content,'同事')) {
+                $code = 200;
+                $msg = '发送成功';
+            } else {
+                $code = 204;
+                $msg = '发送失败';
+            }
+        } else {
+            $code = 204;
+            $msg = $res;
+        }
+        return $this->create('', $msg, $code);
     }
 
 

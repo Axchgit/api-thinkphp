@@ -164,62 +164,329 @@ function remove_duplicate($array)
 //获取真实IP
 // function getClientRealIP()  
 //获取用户真实IP 
-function getClientRealIP() { 
-    if (getenv("HTTP_CLIENT_IP") && strcasecmp(getenv("HTTP_CLIENT_IP"), "unknown")) 
-        $ip = getenv("HTTP_CLIENT_IP"); 
+function getClientRealIP()
+{
+    if (getenv("HTTP_CLIENT_IP") && strcasecmp(getenv("HTTP_CLIENT_IP"), "unknown"))
+        $ip = getenv("HTTP_CLIENT_IP");
     else 
-        if (getenv("HTTP_X_FORWARDED_FOR") && strcasecmp(getenv("HTTP_X_FORWARDED_FOR"), "unknown")) 
-            $ip = getenv("HTTP_X_FORWARDED_FOR"); 
-        else 
-            if (getenv("REMOTE_ADDR") && strcasecmp(getenv("REMOTE_ADDR"), "unknown")) 
-                $ip = getenv("REMOTE_ADDR"); 
-            else 
-                if (isset ($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] && strcasecmp($_SERVER['REMOTE_ADDR'], "unknown")) 
-                    $ip = $_SERVER['REMOTE_ADDR']; 
-                else 
-                    $ip = "unknown"; 
-    return ($ip); 
+        if (getenv("HTTP_X_FORWARDED_FOR") && strcasecmp(getenv("HTTP_X_FORWARDED_FOR"), "unknown"))
+        $ip = getenv("HTTP_X_FORWARDED_FOR");
+    else 
+            if (getenv("REMOTE_ADDR") && strcasecmp(getenv("REMOTE_ADDR"), "unknown"))
+        $ip = getenv("REMOTE_ADDR");
+    else 
+                if (isset($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] && strcasecmp($_SERVER['REMOTE_ADDR'], "unknown"))
+        $ip = $_SERVER['REMOTE_ADDR'];
+    else
+        $ip = "unknown";
+    return ($ip);
 }
 //访问url链接
-function httpUtil($url,string $method='GET')
-    {
-        // $num=input('m');                                     //获取前台提交的手机号
-        // $host='http://showphone.market.alicloudapi.com';       //查询主机链接
-        // $path="/6-1";
-        // $querys="num=".$num;                                 //查询参数
-        // $url=$host.$path.'?'.$querys;                           //完整请求链接
+function httpUtil($url, string $method = 'GET')
+{
+    // $num=input('m');                                     //获取前台提交的手机号
+    // $host='http://showphone.market.alicloudapi.com';       //查询主机链接
+    // $path="/6-1";
+    // $querys="num=".$num;                                 //查询参数
+    // $url=$host.$path.'?'.$querys;                           //完整请求链接
 
-        $appcode='';                                       //阿里云提供的接口app码
-        $headers = array();
-        array_push($headers, "Authorization:APPCODE " . $appcode);//请求头
+    $appcode = '';                                       //阿里云提供的接口app码
+    $headers = array();
+    array_push($headers, "Authorization:APPCODE " . $appcode); //请求头
 
-        // $method='GET';                                               //请求方式
+    // $method='GET';                                               //请求方式
 
-        $curl=curl_init();                                           //初始化一个curl句柄,用于获取其它网站内容
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method); //请求方式
-        curl_setopt($curl, CURLOPT_URL, $url);   //请求url
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers); //请求头
-        curl_setopt($curl, CURLOPT_FAILONERROR, false);  //是否显示HTTP状态码
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);//执行成功返回结果
-        curl_setopt($curl, CURLOPT_HEADER, false);    //是否返回请求头信息
-        // if (1 == strpos("$".$host, "https://"))
-        // {
-        //     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);//禁止curl验证对等证书
-        //     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);//不检查证书
-        // }
-        $res=curl_exec($curl);//执行查询句柄
-        curl_close($curl);    //关闭查询连接
-        $resu=json_decode($res,true);//将json数据解码为php数组
+    $curl = curl_init();                                           //初始化一个curl句柄,用于获取其它网站内容
+    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method); //请求方式
+    curl_setopt($curl, CURLOPT_URL, $url);   //请求url
+    curl_setopt($curl, CURLOPT_HTTPHEADER, $headers); //请求头
+    curl_setopt($curl, CURLOPT_FAILONERROR, false);  //是否显示HTTP状态码
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true); //执行成功返回结果
+    curl_setopt($curl, CURLOPT_HEADER, false);    //是否返回请求头信息
+    // if (1 == strpos("$".$host, "https://"))
+    // {
+    //     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);//禁止curl验证对等证书
+    //     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);//不检查证书
+    // }
+    $res = curl_exec($curl); //执行查询句柄
+    curl_close($curl);    //关闭查询连接
+    $resu = json_decode($res, true); //将json数据解码为php数组
+    return $resu;
+
+    if ($resu['showapi_res_body']['ret_code'] == -1) {          //返回错误码，查询失败
+        // return $this->error('没有查询结果，请重新输入','Index/index');
+        return false;
+    } else {
         return $resu;
 
-        if($resu['showapi_res_body']['ret_code']==-1){          //返回错误码，查询失败
-            // return $this->error('没有查询结果，请重新输入','Index/index');
-            return false;
-        }else{
-            return $resu;
-
-            // $this->assign('num',$num);           //将查询手机号写入模板
-            // $this->assign('res',$resu);          //将查询结果php数组写入模板
-            // return $this->fetch('index');
-        }
+        // $this->assign('num',$num);           //将查询手机号写入模板
+        // $this->assign('res',$resu);          //将查询结果php数组写入模板
+        // return $this->fetch('index');
     }
+}
+
+
+/**
+ * @description: 
+ *@param : undefined
+
+ *@param mixed $name 姓名
+
+ *@param mixed $code  验证码
+
+ *@param mixed $operation 操作
+
+ *@param string $call 称呼 [同志,管理员]
+
+ * @return {*} 邮件模板
+ */
+function emailHtmlModel($name, $code, $operation, string $call = '管理员')
+{
+    $email_html_alibaba = '<head>
+    <base target="_blank" />
+    <style type="text/css">::-webkit-scrollbar{ display: none; }</style>
+    <style id="cloudAttachStyle" type="text/css">#divNeteaseBigAttach, #divNeteaseBigAttach_bak{display:none;}</style>
+    <style id="blockquoteStyle" type="text/css">blockquote{display:none;}</style>
+    <style type="text/css">
+        body{font-size:14px;font-family:arial,verdana,sans-serif;line-height:1.666;padding:0;margin:0;overflow:auto;white-space:normal;word-wrap:break-word;min-height:100px}
+        td, input, button, select, body{font-family:Helvetica, "Microsoft Yahei", verdana}
+        pre {white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space:-o-pre-wrap;word-wrap:break-word;width:95%}
+        th,td{font-family:arial,verdana,sans-serif;line-height:1.666}
+        img{ border:0}
+        header,footer,section,aside,article,nav,hgroup,figure,figcaption{display:block}
+        blockquote{margin-right:0px}
+    </style>
+  </head>
+  <body tabindex="0" role="listitem">
+  <table width="700" border="0" align="center" cellspacing="0" style="width:700px;">
+    <tbody>
+    <tr>
+        <td>
+            <div style="width:700px;margin:0 auto;border-bottom:1px solid #ccc;margin-bottom:30px;">
+                <table border="0" cellpadding="0" cellspacing="0" width="700" height="39" style="font:12px Tahoma, Arial, 宋体;">
+                    <tbody><tr><td width="210"></td></tr></tbody>
+                </table>
+            </div>
+            <div style="width:680px;padding:0 10px;margin:0 auto;">
+                <div style="line-height:1.5;font-size:14px;margin-bottom:25px;color:#4d4d4d;">
+                    <strong style="display:block;margin-bottom:15px;">亲爱的<span style="color: green">' . $name . '</span>' . $call . ',<span style="color:#f60;font-size: 16px;"></span>您好！</strong>
+                    <strong style="display:block;margin-bottom:15px;">
+                        您正在进行<span style="color: red">' . $operation . '</span>操作，请在验证码输入框中输入：<span style="color:#f60;font-size: 24px">' . $code . '</span>，以完成操作。
+                    </strong>
+                </div>
+                <div style="margin-bottom:30px;">
+                    <small style="display:block;margin-bottom:20px;font-size:12px;">
+                        <p style="color:#747474;">
+                            注意：此操作可能会修改您的密码、登录或绑定手机。如非本人操作，请及时登录并修改密码以保证帐户安全
+                            <br>（工作人员不会向你索取此验证码，请勿泄漏！)
+                        </p>
+                    </small>
+                </div>
+            </div>
+            <div style="width:700px;margin:0 auto;">
+                <div style="padding:10px 10px 0;border-top:1px solid #ccc;color:#747474;margin-bottom:20px;line-height:1.3em;font-size:12px;">
+                    <p>此为系统邮件，请勿回复<br>
+                        请保管好您的邮箱，避免账号被他人盗用
+                    </p>
+                    <p>学创科技有限公司</p>
+                </div>
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>';
+    $email_html_jiasudog = '
+   <style type="text/css">
+       .qmbox html {
+         -webkit-text-size-adjust: none;
+         -ms-text-size-adjust: none;
+       }
+   
+       @media only screen and (min-device-width: 750px) {
+         .qmbox .table750 {
+           width: 750px !important;
+         }
+       }
+   
+       @media only screen and (max-device-width: 750px),
+       only screen and (max-width: 750px) {
+         .qmbox table[class="table750"] {
+           width: 100% !important;
+         }
+   
+         .qmbox .mob_b {
+           width: 93% !important;
+           max-width: 93% !important;
+           min-width: 93% !important;
+         }
+   
+         .qmbox .mob_b1 {
+           width: 100% !important;
+           max-width: 100% !important;
+           min-width: 100% !important;
+         }
+   
+         .qmbox .mob_left {
+           text-align: left !important;
+         }
+   
+         .qmbox .mob_soc {
+           width: 50% !important;
+           max-width: 50% !important;
+           min-width: 50% !important;
+         }
+   
+         .qmbox .mob_menu {
+           width: 50% !important;
+           max-width: 50% !important;
+           min-width: 50% !important;
+           box-shadow: inset -1px -1px 0 0 rgba(255, 255, 255, 0.2);
+         }
+   
+         .qmbox .mob_center {
+           text-align: center !important;
+         }
+   
+         .qmbox .top_pad {
+           height: 15px !important;
+           max-height: 15px !important;
+           min-height: 15px !important;
+         }
+   
+         .qmbox .mob_pad {
+           width: 15px !important;
+           max-width: 15px !important;
+           min-width: 15px !important;
+         }
+   
+         .qmbox .mob_div {
+           display: block !important;
+         }
+       }
+   
+       @media only screen and (max-device-width: 550px),
+       only screen and (max-width: 550px) {
+         .qmbox .mod_div {
+           display: block !important;
+         }
+       }
+   
+       .qmbox .table750 {
+         width: 750px;
+       }
+     </style>
+     
+     
+     
+     
+   
+   
+   
+   
+     <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: #f3f3f3; min-width: 350px; font-size: 1px; line-height: normal;">
+       <tbody><tr>
+         <td align="center" valign="top">
+           
+           <table cellpadding="0" cellspacing="0" border="0" width="750" class="table750" style="width: 100%; max-width: 750px; min-width: 350px; background: #f3f3f3;">
+             <tbody><tr>
+               <td class="mob_pad" width="25" style="width: 25px; max-width: 25px; min-width: 25px;">&nbsp;</td>
+               <td align="center" valign="top" style="background: #ffffff;">
+   
+                 <table cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100% !important; min-width: 100%; max-width: 100%; background: #f3f3f3;">
+                   <tbody><tr>
+                     <td align="right" valign="top">
+                       <div class="top_pad" style="height: 25px; line-height: 25px; font-size: 23px;">&nbsp;</div>
+                     </td>
+                   </tr>
+                 </tbody></table>
+   
+                 <table cellpadding="0" cellspacing="0" border="0" width="88%" style="width: 88% !important; min-width: 88%; max-width: 88%;">
+                   <tbody><tr>
+                     <td align="left" valign="top">
+                       <div style="height: 39px; line-height: 39px; font-size: 37px;">&nbsp;</div>
+                       <font class="mob_title1" face=""Source Sans Pro", sans-serif" color="#1a1a1a" style="font-size: 52px; line-height: 55px; font-weight: 300; letter-spacing: -1.5px;">
+                         <!-- <a href="https://www.jiasu.dog" style="text-decoration:none" rel="noopener" target="_blank"> -->
+                           <span class="mob_title1" style="font-family: Nunito, Arial, Tahoma, Geneva, sans-serif; color: #bc0000; font-size: 48px; line-height: 55px; font-weight: 700; letter-spacing: -1.5px;">河池学院党支部</span>
+                       <!-- </a> -->
+                       </font>
+                       <div style="height: 73px; line-height: 73px; font-size: 71px;">&nbsp;</div>
+                     </td>
+                   </tr>
+                 </tbody></table>
+                 
+                 <HR style="FILTER: alpha(opacity=100,finishopacity=0,style=3)" width="80%" color=#bc0000 SIZE=3>
+   
+                 <table cellpadding="0" cellspacing="0" border="0" width="88%" style="width: 88% !important; min-width: 88%; max-width: 88%;">
+                   <tbody><tr>
+                     <td align="left" valign="top">
+                       <font face="Nunito, sans-serif" color="#1a1a1a" style="font-size: 52px; line-height: 60px; font-weight: 300; letter-spacing: -1.5px;">
+                         <span style="font-family: Nunito, Arial, Tahoma, Geneva, sans-serif;  font-size: 30px; line-height: 60px; font-weight: 700; letter-spacing: -1.5px;">您好,</span>
+                         <span style="font-family: Nunito, Arial, Tahoma, Geneva, sans-serif; color: green; font-size: 30px; line-height: 60px; font-weight: 700; letter-spacing: -1.5px;">' . $name . '</span>
+
+                         <span style="font-family: Nunito, Arial, Tahoma, Geneva, sans-serif;  font-size: 30px; line-height: 60px; font-weight: 700; letter-spacing: -1.5px;">' . $call . '</span>
+                       </font>
+                       <div style="height: 33px; line-height: 33px; font-size: 31px;">&nbsp;</div>
+                       <font face="Nunito, sans-serif" color="#585858" style="font-size: 24px; line-height: 32px;">
+                         <span style="font-family: Nunito, Arial, Tahoma, Geneva, sans-serif; color: #585858; font-size: 24px; line-height: 32px;">以下6位数字是邮箱验证码，请在网站上填写以通过验证</span>
+                       </font>
+                       <div style="height: 18px; line-height: 33px; font-size: 31px;">&nbsp;</div>
+                       <font face="Nunito, sans-serif" color="#585858" style="font-size: 24px; line-height: 32px;">
+                         <span style="font-family: Nunito, Arial, Tahoma, Geneva, sans-serif; color: #aaaaaa; font-size: 16px; line-height: 32px;">(如果您从未请求发送邮箱验证码，请忽略此邮件)</span>
+                       </font>
+                       <div style="height: 33px; line-height: 33px; font-size: 31px;">&nbsp;</div>
+                       <table class="mob_btn" cellpadding="0" cellspacing="0" border="0" style="background: #6777ef; border-radius: 4px;">
+                         <tbody><tr>
+                           <td align="center" valign="top">
+                             <span style="display: block; border: 1px solid #6777ef; border-radius: 0px; padding: 6px 12px; font-family: Nunito, Arial, Verdana, Tahoma, Geneva, sans-serif; color: #ffffff; font-size: 20px; line-height: 30px; text-decoration: none; white-space: nowrap; font-weight: 600;">
+                               <font face="Nunito, sans-serif" color="#ffffff" style="font-size: 20px; line-height: 30px; text-decoration: none; white-space: nowrap; font-weight: 600;">
+                                 <span style="font-family: Nunito, Arial, Verdana, Tahoma, Geneva, sans-serif; color: #ffffff; font-size: 20px; line-height: 30px; text-decoration: none; white-space: nowrap; font-weight: 600;">' . $code . '</span>
+                               </font>
+                             </span>
+                           </td>
+                         </tr>
+                       </tbody></table>
+                       <div style="height: 75px; line-height: 75px; font-size: 73px;">&nbsp;</div>
+                     </td>
+                   </tr>
+                 </tbody></table>
+   
+                 <table cellpadding="0" cellspacing="0" border="0" width="100%" style="width: 100% !important; min-width: 100%; max-width: 100%; background: #f3f3f3;">
+                   <tbody><tr>
+                     <td align="center" valign="top">
+                       <div style="height: 34px; line-height: 34px; font-size: 32px;">&nbsp;</div>
+                       <table cellpadding="0" cellspacing="0" border="0" width="88%" style="width: 88% !important; min-width: 88%; max-width: 88%;">
+                         <tbody><tr>
+                           <!-- <td align="center" valign="top">
+                             <div style="height:12px; line-height: 34px; font-size: 32px;">&nbsp;</div>
+                             <font face="Nunito, sans-serif" color="#868686" style="font-size: 17px; line-height: 20px;">
+                               <span style="font-family: Nunito, Arial, Tahoma, Geneva, sans-serif; color: #868686; font-size: 17px; line-height: 20px;">2020 © 加速狗. All Rights Reserved.</span>
+                             </font>
+                             <div style="height: 3px; line-height: 3px; font-size: 1px;">&nbsp;</div>
+                             <font face="Nunito, sans-serif" color="#1a1a1a" style="font-size: 17px; line-height: 20px;">
+                               <span style="font-family: Nunito, Arial, Tahoma, Geneva, sans-serif; color: #1a1a1a; font-size: 17px; line-height: 20px;"><a href="https://www.jiasu.dog" target="_blank" style="font-family: Nunito, Arial, Tahoma, Geneva, sans-serif; color: #1a1a1a; font-size: 17px; line-height: 20px; text-decoration: none;" rel="noopener">访问官网</a> &nbsp; | &nbsp; <a href="https://www.jiasu.dog/user/" target="_blank" style="font-family: Nunito, Arial, Tahoma, Geneva, sans-serif; color: #1a1a1a; font-size: 17px; line-height: 20px; text-decoration: none;" rel="noopener">用户中心</a></span>
+                             </font>
+                             <div style="height: 35px; line-height: 35px; font-size: 33px;">&nbsp;</div>
+                           </td> -->
+                         </tr>
+                       </tbody></table>
+                     </td>
+                   </tr>
+                 </tbody></table>
+   
+               </td>
+               <td class="mob_pad" width="25" style="width: 25px; max-width: 25px; min-width: 25px;">&nbsp;</td>
+             </tr>
+           </tbody></table>
+           
+         </td>
+       </tr>
+     </tbody></table>
+   
+   
+   
+   <style type="text/css">.qmbox style, .qmbox script, .qmbox head, .qmbox link, .qmbox meta {display: none !important;}</style></div></div><!-- --><style>#mailContentContainer .txt {height:auto;}</style>  </div>';
+
+
+    return $email_html_alibaba;
+}
