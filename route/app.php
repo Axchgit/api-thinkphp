@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:15:58
- * @LastEditTime: 2021-04-02 18:29:42
+ * @LastEditTime: 2021-04-10 16:44:31
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\route\app.php
@@ -31,11 +31,18 @@ Route::get('test/testone', 'Test/testOne')->middleware('checkrequest', 6)->allow
 Route::get('test/testfive', 'Test/testFive')->middleware('checkrequest', 6)->allowCrossDomain();
 Route::get('test/testtwo', 'Test/testTwo')->allowCrossDomain();
 
+/****公共模块*****/
+Route::group('index', function () {
+
+    Route::get('getProfile', 'getProfile')->middleware('checkrequest', 9)->allowCrossDomain();
+    Route::rule('uploadAvatar', 'uploadAvatar')->middleware('checkrequest', 9)->allowCrossDomain();
+    
+})->completeMatch()->prefix('Index/');
 
 /****登录模块*****/
 Route::group('login', function () {
-    Route::rule('getAuthInfo/<qruid>/<userUuid?>/<isScan?>','getAuthInfo');
-    Route::rule('phoneConfirmLogin/<qruid>','phoneConfirmLogin')->middleware('checkrequest', 9)->allowCrossDomain();
+    Route::rule('getAuthInfo/<qruid>/<userUuid?>/<isScan?>', 'getAuthInfo');
+    Route::rule('phoneConfirmLogin/<qruid>', 'phoneConfirmLogin')->middleware('checkrequest', 9)->allowCrossDomain();
     // Route::rule('phoneConfirmLogin', 'phoneConfirmLogin')->middleware('checkrequest', 9)->allowCrossDomain();
     //发送验证码请求
     Route::get('/', 'sendAdminCode')->allowCrossDomain();
@@ -71,7 +78,7 @@ Route::group('admin', function () {
     Route::post('reviewFeedback', 'reviewFeedback')->middleware('checkrequest', 1)->allowCrossDomain();
 
 
-    
+
 
 
     // Route::post('selectGoods', 'selectGoods')->middleware('checkrequest', 1)->allowCrossDomain();

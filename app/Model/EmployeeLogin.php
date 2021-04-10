@@ -2,10 +2,10 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2021-01-03 03:34:14
+ * @LastEditTime: 2021-04-10 18:23:18
  * @LastEditors: xch
  * @Description: 
- * @FilePath: \testd:\wamp64\www\api-thinkphp\app\Model\EmployeeLogin.php
+ * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\Model\EmployeeLogin.php
  */
 
 namespace app\model;
@@ -48,36 +48,51 @@ class EmployeeLogin extends Model
             return $data;
         }
     }
-        // 修改人员信息
-        public function updateEmployeeAccount($data)
-        {
-            try {
-                $this->update($data);
-                return true;
-            } catch (\Exception $e) {
-                return $e;
-            }
-            // $res = $this->save($data);
+    // 修改人员信息
+    public function updateEmployeeAccount($data)
+    {
+        try {
+            $this->update($data);
+            return true;
+        } catch (\Exception $e) {
+            return $e;
         }
-    
-        // 删除人员信息
-        public function deleteEmployeeAccount($id)
-        {
-            try {
-                //软删除
-                $uuid = $this->where('id',$id)->value('uuid');
-                $this->destroy($id);
-                //更新账户激活状态
-                $emp_model = new EmployeeModel();
-                $employee = $emp_model->where('uuid',$uuid)->find();
-                $employee->review_status = 0;
-                $employee->save();
-                return true;
-            } catch (\Exception $e) {
-                return $e;
-            }
-            // $res = $this->save($data);
+        // $res = $this->save($data);
+    }
+
+    // 根据uuid修改人员信息
+    public function updateEmployeeAccountByUuid($data,$uuid)
+    {
+        try {
+            $id = $this->getAcValueByUuid($uuid,'id');
+            // $this->update($data,['id'=>$id]);
+            $this->update($data,['id'=>$id]);
+            // return [$id,$data];
+            return true;
+        } catch (\Exception $e) {
+            return $e->getMessage();
         }
+        // $res = $this->save($data);
+    }
+
+    // 删除人员信息
+    public function deleteEmployeeAccount($id)
+    {
+        try {
+            //软删除
+            $uuid = $this->where('id', $id)->value('uuid');
+            $this->destroy($id);
+            //更新账户激活状态
+            $emp_model = new EmployeeModel();
+            $employee = $emp_model->where('uuid', $uuid)->find();
+            $employee->review_status = 0;
+            $employee->save();
+            return true;
+        } catch (\Exception $e) {
+            return $e;
+        }
+        // $res = $this->save($data);
+    }
 
     /**
      * @description: 员工登录验证
@@ -132,6 +147,15 @@ class EmployeeLogin extends Model
     {
         return Db::table('employee')->where('uuid', $emp_uuid)->value($value);
     }
+        /**
+     * @description: 根据uuid查询单个信息
+     * @param {type} 
+     * @return {type} 
+     */
+    public function getAcValueByUuid($emp_uuid, $value)
+    {
+        return $this->where('uuid', $emp_uuid)->value($value);
+    }
     /**
      * @description: 通过权限查询,多个数据,用到分页
      * @param {type} 
@@ -152,6 +176,7 @@ class EmployeeLogin extends Model
         return $this->where('uuid', $emp_uuid)->select();
     }
 
+    //通过uuid查询个人信息
     public function getAcInfoByUuid($emp_uuid)
     {
         return $this->where('uuid', $emp_uuid)->find();

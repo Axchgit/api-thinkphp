@@ -4,9 +4,9 @@ declare(strict_types=1);
 /*
  * @Author: xch
  * @Date: 2020-08-19 14:18:43
- * @LastEditTime: 2020-09-14 20:49:51
- * @LastEditors: Chenhao Xing
- * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\middleware\CheckRequest.php
+ * @LastEditTime: 2021-04-10 16:48:14
+ * @LastEditors: xch
+ * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\middleware\CheckRequest.php
  * @Description: 
  */
 
