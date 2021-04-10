@@ -2,9 +2,9 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2020-09-14 12:24:24
- * @LastEditors: Chenhao Xing
- * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Employee.php
+ * @LastEditTime: 2021-04-11 00:13:05
+ * @LastEditors: xch
+ * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\controller\Employee.php
  * @Description: 
  */
 
@@ -15,9 +15,10 @@ namespace app\controller;
 use think\Request;
 
 use app\model\Employee as EmployeeModel;
-use app\model\EmployeeLogin as EmpLoginModel;
-use app\model\EmployeeLeave as EmpLeaveModel;
-use app\model\EmployeeQuit as EmpQuitModel;
+use app\model\EmployeeLogin as EmployeeLoginModel;
+use app\model\EmployeeLeave as EmployeeLeaveModel;
+use app\model\EmployeeQuit as EmployeeQuitModel;
+use app\model\TempCode as TempCodeModel;
 use app\model\Feedback as FeedbackModel;
 
 
@@ -27,6 +28,59 @@ use think\facade\Db;
 
 class Employee extends Base
 {
+    //员工个人信息修改
+    public function updateEmployeeAccountInfo(Request $request)
+    {
+        $post = request()->param();
+
+        $tooken_res = $request->data;
+        $uuid = $tooken_res['data']->uuid;
+
+        $el_model = new EmployeeLoginModel();
+        $res = $el_model->updateEmployeeAccountByUuid($post, $uuid);
+        if ($res === true) {
+            return $this->create('', '修改成功');
+        } else {
+            return $this->create($res, '修改失败', 204);
+        }
+    }
+    //个人信息修改-修改密码
+    public function updateEmployeeAccountPassword(Request $request)
+    {
+        $post = request()->param();
+        $tooken_res = $request->data;
+        $uuid = $tooken_res['data']->uuid;
+        $code_model = new TempCodeModel();
+        $el_model = new EmployeeLoginModel();
+
+
+        $code_info = $code_model->getCodeInfoByUuid($uuid);
+        // $code_info = Db::table('temp_code')->where('uuid', $uuid)->find();
+
+        $string_code = (string)$code_info['code'];
+        $code = substr($string_code, 10, 6);
+        //获取当前时间戳
+        $now = time();
+        //获取登录码时间戳
+        $time = substr($string_code, 0, 10);
+        if ($code == $post['email_code']) {
+            if ($time + config("login.code_timeout") >= $now) {
+                //删除验证码
+                $code_model->deleteCode($uuid);
+                $update_res = $el_model->updateEmployeeAccountByUuid($post, $uuid);
+                if ($update_res === true) {
+                    return $this->create('', '修改成功');
+                } else {
+                    return $this->create($update_res, '修改失败', 204);
+                }
+                // return $this->create(['uuid' => $uuid], '成功', 200);
+            } else {
+                return $this->create('', '验证码超时', 201);
+            }
+        } else {
+            return $this->create('', '验证码错误', 204);
+        }
+    }
 
 
 
@@ -93,7 +147,7 @@ class Employee extends Base
     public function updateAcPW()
     {
         $post = request()->param();
-        $emp_login = new EmpLoginModel();
+        $emp_login = new EmployeeLoginModel();
         $res = $emp_login->updatePW($post['uuid'], $post['password']);
         if ($res) {
             return $this->create('', '成功', 200);
@@ -101,6 +155,7 @@ class Employee extends Base
             return $this->create('', '修改失败', 204);
         }
     }
+
     //激活账号验证码
     public function sendActivateCode()
     {
@@ -138,7 +193,7 @@ class Employee extends Base
     public function createEmpAc()
     {
         $post = request()->param();
-        $emp_login = new EmpLoginModel();
+        $emp_login = new EmployeeLoginModel();
         //验证码
         $code_info = Db::table('temp_code')->where('uuid', $post['uuid'])->find();
         $string_code = (string)$code_info['code'];
@@ -248,7 +303,7 @@ class Employee extends Base
         $post = request()->param();
         $res = $request->data;
         // return json($res);
-        $emp_leave_model = new EmpLeaveModel();
+        $emp_leave_model = new EmployeeLeaveModel();
         $key = !empty($post['key']) ? $post['key'] : '';
         $value = !empty($post['value']) ? $post['value'] : '';
         $list = $emp_leave_model->getEmployeeLeaveByUuid($res['data']->uuid, $key, $value, $post['list_rows'], false, ['query' => $post]);
@@ -264,7 +319,7 @@ class Employee extends Base
         $post = request()->param();
         $res = $request->data;
         $post['uuid'] = $res['data']->uuid;
-        $emp_leave_model = new EmpLeaveModel();
+        $emp_leave_model = new EmployeeLeaveModel();
         $res = $emp_leave_model->saveEmployeeLeave($post);
         if ($res === true) {
             return $this->create('', '添加成功', 200);
@@ -277,7 +332,7 @@ class Employee extends Base
     {
         $post = request()->param();
         $res = $request->data;
-        $emp_leave_model = new EmpLeaveModel();
+        $emp_leave_model = new EmployeeLeaveModel();
         $res = $emp_leave_model->deleteEmployeeLeaveByid($res['data']->uuid, $post['id']);
         if ($res === true) {
             return $this->create('', '删除成功', 200);
@@ -291,7 +346,7 @@ class Employee extends Base
         $post = request()->param();
         $res = $request->data;
         // return json($res);
-        $emp_quit_model = new EmpQuitModel();
+        $emp_quit_model = new EmployeeQuitModel();
         $key = !empty($post['key']) ? $post['key'] : '';
         $value = !empty($post['value']) ? $post['value'] : '';
         $list = $emp_quit_model->getEmployeeQuitByUuid($res['data']->uuid, $key, $value, $post['list_rows'], false, ['query' => $post]);
@@ -307,7 +362,7 @@ class Employee extends Base
         $post = request()->param();
         $res = $request->data;
         $post['uuid'] = $res['data']->uuid;
-        $emp_quit_model = new EmpQuitModel();
+        $emp_quit_model = new EmployeeQuitModel();
         $res = $emp_quit_model->saveEmployeeQuit($post);
         if ($res === true) {
             return $this->create('', '添加成功', 200);
@@ -320,7 +375,7 @@ class Employee extends Base
     {
         $post = request()->param();
         $res = $request->data;
-        $emp_quit_model = new EmpQuitModel();
+        $emp_quit_model = new EmployeeQuitModel();
         $res = $emp_quit_model->deleteEmployeeQuitByid($res['data']->uuid, $post['id']);
         if ($res === true) {
             return $this->create('', '删除成功', 200);
@@ -477,7 +532,7 @@ class Employee extends Base
     public function selectAcAll()
     {
         $post = request()->param();
-        $emplogin_model = new EmpLoginModel();
+        $emplogin_model = new EmployeeLoginModel();
         $list = $emplogin_model->getEmpAc($post['list_rows'], '', ['query' => $post]);
         if ($list) {
             return $this->create($list, '查询成功');
@@ -492,7 +547,7 @@ class Employee extends Base
      */
     public function selectAcByName($nick_name = '')
     {
-        $emplogin_model = new EmpLoginModel();
+        $emplogin_model = new EmployeeLoginModel();
         $data = $emplogin_model->getEmpAcByName($nick_name);
         // return $data;
         $list = [
@@ -512,7 +567,7 @@ class Employee extends Base
     public function selectAcByRole()
     {
         $post = request()->param();
-        $emplogin_model = new EmpLoginModel();
+        $emplogin_model = new EmployeeLoginModel();
         $data = $emplogin_model->getEmpAcByRole($post['list_rows'], '', ['query' => $post], $post['role']);
         if ($data) {
             return $this->create($data, '查询成功');

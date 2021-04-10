@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:15:58
- * @LastEditTime: 2021-04-10 16:44:31
+ * @LastEditTime: 2021-04-11 00:10:31
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\route\app.php
@@ -36,6 +36,8 @@ Route::group('index', function () {
 
     Route::get('getProfile', 'getProfile')->middleware('checkrequest', 9)->allowCrossDomain();
     Route::rule('uploadAvatar', 'uploadAvatar')->middleware('checkrequest', 9)->allowCrossDomain();
+    Route::rule('sendEmployeeEmailCode', 'sendEmployeeEmailCode')->middleware('checkrequest', 9)->allowCrossDomain();
+
     
 })->completeMatch()->prefix('Index/');
 
@@ -102,6 +104,12 @@ Route::group('employee', function () {
     Route::post('sendActivateCode', 'sendActivateCode')->allowCrossDomain();
     Route::post('checkRecover', 'checkRecover')->allowCrossDomain();
     Route::post('updateAcPW', 'updateAcPW')->allowCrossDomain();
+    
+    /*************更新员工信息 */
+    Route::post('updateEmployeeAccountInfo', 'updateEmployeeAccountInfo')->middleware('checkrequest', 5)->allowCrossDomain();
+    Route::post('updateEmployeeAccountPassword', 'updateEmployeeAccountPassword')->middleware('checkrequest', 5)->allowCrossDomain();
+
+
     Route::post('createEmpAc', 'createEmpAc')->allowCrossDomain();
     /***********员工业绩******/
     Route::post('submitPerformancByUuid', 'submitPerformancByUuid')->middleware('checkrequest', 5)->allowCrossDomain();
