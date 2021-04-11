@@ -2,9 +2,9 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2020-09-15 22:18:21
- * @LastEditors: Chenhao Xing
- * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Admin.php
+ * @LastEditTime: 2021-04-12 00:46:50
+ * @LastEditors: xch
+ * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\controller\Admin.php
  * @Description: 
  */
 
@@ -20,6 +20,8 @@ use app\model\Performance as PerformanceModel;
 use app\model\EmployeeLeave as EmployeeLeaveModel;
 use app\model\EmployeeQuit as EmployeeQuitModel;
 use app\model\Feedback as FeedbackModel;
+
+use app\publicClass\DataBack;
 
 
 
@@ -260,7 +262,58 @@ class Admin extends Base
 
 
 
+    /**********数据库备份*********** */
 
+    //获取备份文件列表
+    public function viewBackupFile()
+    {
+        // $dbhost = config('database.connections.mysql.hostname');
+        $post = request()->param();
+        $databack = new DataBack();
+
+        $file_path = !empty($post['file_path']) ? $post['file_path'] : config('database.backup.databack_path');
+        $res = $databack->getDirContent($file_path);
+        if ($res[0] !== true) {
+            return $this->create('', '系统错误');
+        }
+        return $this->create($res[1], '成功');
+    }
+    //备份数据库
+    public function backupSqlApi()
+    {
+        $post = request()->param();
+        $databack = new DataBack();
+
+        $dbname = !empty($post['dbname']) ? $post['dbname'] : 'test';
+        $path = !empty($post['path']) ? $post['path'] : '+_+';
+        $databack->backupSql($dbname, $path);
+        return $this->create('', '成功');
+    }
+    //数据库恢复数据
+    public function restoreSqlByBackupFile()
+    {
+        $post = request()->param();
+        $databack = new DataBack();
+
+        $dbname = !empty($post['dbname']) ? $post['dbname'] : config('database.connections.mysql.database');
+        //替换反斜杠为斜杠
+        $post['file'] = str_replace('\\','/',$post['file']);
+        $databack->restoreSql($post['file'], $dbname);
+        return $this->create([$post['file'], $dbname], '成功');
+    }
+    //删除数据库备份文件
+    public function deleteBackupFile()
+    {
+        $post = request()->param();
+        unlink($post['file']);
+        return $this->create('', '成功');
+    }
+
+
+
+
+
+    /********************* */
 
 
 

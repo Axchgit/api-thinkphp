@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:15:58
- * @LastEditTime: 2021-04-11 00:10:31
+ * @LastEditTime: 2021-04-11 23:56:20
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\route\app.php
@@ -79,7 +79,11 @@ Route::group('admin', function () {
     Route::get('selectFeedback', 'selectFeedback')->middleware('checkrequest', 1)->allowCrossDomain();
     Route::post('reviewFeedback', 'reviewFeedback')->middleware('checkrequest', 1)->allowCrossDomain();
 
-
+/************数据库备份*/
+    Route::post('viewBackupFile', 'viewBackupFile')->middleware('checkrequest', 1)->allowCrossDomain();
+    Route::post('backupSqlApi', 'backupSqlApi')->middleware('checkrequest', 1)->allowCrossDomain();
+    Route::post('restoreSqlByBackupFile', 'restoreSqlByBackupFile')->middleware('checkrequest', 1)->allowCrossDomain();
+    Route::post('deleteBackupFile', 'deleteBackupFile')->middleware('checkrequest', 1)->allowCrossDomain();
 
 
 
