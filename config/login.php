@@ -2,9 +2,9 @@
 /*
  * @Author: xch
  * @Date: 2020-08-16 15:46:22
- * @LastEditTime: 2020-08-17 16:20:32
+ * @LastEditTime: 2021-04-11 19:20:17
  * @LastEditors: xch
- * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\config\login.php
+ * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\config\login.php
  * @Description: 
  */
 // +----------------------------------------------------------------------
@@ -14,6 +14,6 @@
 return [
     //验证码过期事件
     'code_timeout' => 300,
-    'token_key' =>'!@#$%*&*%#@'
+    'token_key' =>'!@$%&*%#@%#@#'
 
 ];
