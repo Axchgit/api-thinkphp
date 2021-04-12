@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:15:58
- * @LastEditTime: 2021-04-11 23:56:20
+ * @LastEditTime: 2021-04-13 01:22:07
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\route\app.php
@@ -37,8 +37,9 @@ Route::group('index', function () {
     Route::get('getProfile', 'getProfile')->middleware('checkrequest', 9)->allowCrossDomain();
     Route::rule('uploadAvatar', 'uploadAvatar')->middleware('checkrequest', 9)->allowCrossDomain();
     Route::rule('sendEmployeeEmailCode', 'sendEmployeeEmailCode')->middleware('checkrequest', 9)->allowCrossDomain();
-
-    
+    //通告
+    Route::get('viewBulletin', 'viewBulletin')->middleware('checkrequest', 9)->allowCrossDomain();
+    Route::get('readBulletin', 'readBulletin')->middleware('checkrequest', 9)->allowCrossDomain();
 })->completeMatch()->prefix('Index/');
 
 /****登录模块*****/
@@ -79,7 +80,13 @@ Route::group('admin', function () {
     Route::get('selectFeedback', 'selectFeedback')->middleware('checkrequest', 1)->allowCrossDomain();
     Route::post('reviewFeedback', 'reviewFeedback')->middleware('checkrequest', 1)->allowCrossDomain();
 
-/************数据库备份*/
+    //发送通告
+    Route::post('sendBulletin', 'sendBulletin')->middleware('checkrequest', 4)->allowCrossDomain();
+    Route::get('viewAllBulletin', 'viewAllBulletin')->middleware('checkrequest', 4)->allowCrossDomain();
+
+    
+    
+    /************数据库备份*/
     Route::post('viewBackupFile', 'viewBackupFile')->middleware('checkrequest', 1)->allowCrossDomain();
     Route::post('backupSqlApi', 'backupSqlApi')->middleware('checkrequest', 1)->allowCrossDomain();
     Route::post('restoreSqlByBackupFile', 'restoreSqlByBackupFile')->middleware('checkrequest', 1)->allowCrossDomain();
@@ -108,7 +115,7 @@ Route::group('employee', function () {
     Route::post('sendActivateCode', 'sendActivateCode')->allowCrossDomain();
     Route::post('checkRecover', 'checkRecover')->allowCrossDomain();
     Route::post('updateAcPW', 'updateAcPW')->allowCrossDomain();
-    
+
     /*************更新员工信息 */
     Route::post('updateEmployeeAccountInfo', 'updateEmployeeAccountInfo')->middleware('checkrequest', 5)->allowCrossDomain();
     Route::post('updateEmployeeAccountPassword', 'updateEmployeeAccountPassword')->middleware('checkrequest', 5)->allowCrossDomain();
@@ -134,6 +141,12 @@ Route::group('employee', function () {
     Route::get('selectFeedbackByUuid', 'selectFeedbackByUuid')->middleware('checkrequest', 5)->allowCrossDomain();
     Route::post('addFeedback', 'addFeedback')->middleware('checkrequest', 5)->allowCrossDomain();
     Route::post('recallFeedback', 'recallFeedback')->middleware('checkrequest', 5)->allowCrossDomain();
+
+    /*****通告 */
+    Route::get('viewBulletin', 'viewBulletin')->middleware('checkrequest', 9)->allowCrossDomain();
+    Route::get('readBulletin', 'readBulletin')->middleware('checkrequest', 9)->allowCrossDomain();
+    Route::get('getCountUnreadBulletin', 'getCountUnreadBulletin')->middleware('checkrequest', 9)->allowCrossDomain();
+
 })->completeMatch()->prefix('Employee/');
 
 

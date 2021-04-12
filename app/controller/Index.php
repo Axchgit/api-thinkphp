@@ -4,7 +4,7 @@
  * @Author: xch
  * @Date: 2020-09-06 03:00:08
  * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\controller\Index.php
- * @LastEditTime: 2021-04-10 23:47:39
+ * @LastEditTime: 2021-04-13 00:44:01
  * @LastEditors: xch
  */
 
@@ -39,6 +39,8 @@ class Index extends Base
         return $this->create(['login_record' => $login_record, 'el_info' => $el_info], '查询成功');
     }
 
+
+
     //上传头像
     public function uploadAvatar(Request $request)
     {
@@ -57,7 +59,7 @@ class Index extends Base
         try {
             validate(['file' => ['fileSize:1024000', 'fileExt:jpg,png,gif']])->check(['file' => $file]);
             $savename = \think\facade\Filesystem::disk('avatar')->putFile('avatar', $file, 'md5');
-            $res = $el_model->updateEmployeeAccountByUuid(['avatar' => $savename],$uuid);
+            $res = $el_model->updateEmployeeAccountByUuid(['avatar' => $savename], $uuid);
             if ($res === true) {
                 return $this->create($savename, '上传成功', 200);
             }
@@ -67,7 +69,7 @@ class Index extends Base
         }
     }
 
-        /**
+    /**
      * @description: 发送邮箱验证码
      * @param {type} 
      * @return {type} 
@@ -95,7 +97,7 @@ class Index extends Base
         //字符串截取指定片段
         $v_code = substr($log_code, 10, 6);
         //查询账户对应email
-        $employee_info = $employee_model->getEmployeeInfoByKey('uuid',$uuid);
+        $employee_info = $employee_model->getEmployeeInfoByKey('uuid', $uuid);
 
         // $person_email = $person_model->getInfoByNumber($post['number'], 'email');
         $title = '验证码';
@@ -107,7 +109,7 @@ class Index extends Base
 
         // $content = '你好, <b>朋友</b>! <br/><br/><span>你的验证码是:' . (string)$code;
         if ($res === true) {
-            if (sendMail($employee_info['email'], $title, $content,'同事')) {
+            if (sendMail($employee_info['email'], $title, $content, '同事')) {
                 $code = 200;
                 $msg = '发送成功';
             } else {

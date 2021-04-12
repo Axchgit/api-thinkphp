@@ -2,10 +2,10 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2021-01-04 22:42:49
+ * @LastEditTime: 2021-04-13 00:02:10
  * @LastEditors: xch
  * @Description: 员工信息
- * @FilePath: \testd:\wamp64\www\api-thinkphp\app\Model\Employee.php
+ * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\Model\Employee.php
  */
 
 namespace app\model;
@@ -38,6 +38,11 @@ class Employee extends Model
     {
         $emp_uuid = $this->where('work_num', $work_num)->value('uuid');
         return Db::table('temp_code')->where('uuid', $emp_uuid)->delete();
+    }
+        //通过uuid查询
+    public function getInfoByUuid($emp_uuid)
+    {
+        return $this->where('uuid', $emp_uuid)->find();
     }
 
     //根据键值查询员工信息
@@ -221,11 +226,7 @@ class Employee extends Model
     //         return $data;
     //     }
     // }
-    // //通过uuid查询
-    // public function getInfoByUuid($emp_uuid, $value)
-    // {
-    //     return $this->where('uuid', $emp_uuid)->value($value);
-    // }
+
     // //通过工号查询
     // public function getInfoByWorkNum($work_num, $value)
     // {

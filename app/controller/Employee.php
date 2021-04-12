@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2021-04-11 00:13:05
+ * @LastEditTime: 2021-04-13 00:50:09
  * @LastEditors: xch
  * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\controller\Employee.php
  * @Description: 
@@ -20,6 +20,9 @@ use app\model\EmployeeLeave as EmployeeLeaveModel;
 use app\model\EmployeeQuit as EmployeeQuitModel;
 use app\model\TempCode as TempCodeModel;
 use app\model\Feedback as FeedbackModel;
+
+use app\model\Bulletin as BullteinModel;
+use app\model\BulletinRead as BullteinReadModel;
 
 
 use app\model\Performance as PerformanceModel;
@@ -430,6 +433,64 @@ class Employee extends Base
             return $this->create('', $res, 204);
         }
     }
+
+
+    /************通告 */
+
+    //获取通告
+    public function viewBulletin(Request $request)
+    {
+        $post = request()->param();
+        $tooken_res = $request->data;
+        $uuid = $tooken_res['data']->uuid;
+        // $person_model = new PersonModel();
+        $employee_model = new EmployeeModel();
+        $bulletin_model = new BullteinModel();
+        $emp_info = $employee_model->getInfoByUuid($uuid);
+        $list_rows = !empty($post['list_rows']) ? $post['list_rows'] : '';
+        $list = $bulletin_model->getBulletin($list_rows, ['query' => $post], $emp_info['role'], $uuid);
+        return $list;
+    }
+
+    //阅读公告
+    public function readBulletin(Request $request)
+    {
+        $post = request()->param();
+
+        $tooken_res = $request->data;
+        $uuid = $tooken_res['data']->uuid;
+        $br_model = new BullteinReadModel();
+
+        $post['target_uid'] = $uuid;
+
+        $res = $br_model->createBulletinRead($post);
+        if ($res === true) {
+            return $this->create('', '阅读成功');
+        }
+        return $this->create($res, '阅读失败');
+    }
+
+    //获取未读通告统计
+    public function getCountUnreadBulletin(Request $request)
+    {
+        $tooken_res = $request->data;
+        $uuid = $tooken_res['data']->uuid;
+        $employee_model = new EmployeeModel();
+
+        // $person_model = new PersonModel();
+        $bulletin_model = new BullteinModel();
+
+        $emp_role = $employee_model->getEmployeeKeyInfoByUuid($uuid, 'role');
+        $count = $bulletin_model->countUnreadBulletin($emp_role, $uuid);
+        if (is_int($count)) {
+            return $this->create(['unread' => $count], '查询成功');
+        } else {
+            return $this->create($count, '查询失败', 204);
+        }
+    }
+
+
+    /************* */
 
 
 

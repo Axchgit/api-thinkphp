@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2021-04-12 00:46:50
+ * @LastEditTime: 2021-04-13 01:21:41
  * @LastEditors: xch
  * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\controller\Admin.php
  * @Description: 
@@ -20,6 +20,8 @@ use app\model\Performance as PerformanceModel;
 use app\model\EmployeeLeave as EmployeeLeaveModel;
 use app\model\EmployeeQuit as EmployeeQuitModel;
 use app\model\Feedback as FeedbackModel;
+use app\model\Bulletin as BullteinModel;
+
 
 use app\publicClass\DataBack;
 
@@ -262,6 +264,41 @@ class Admin extends Base
 
 
 
+    /**************通告 */
+    public function sendBulletin(Request $request)
+    {
+        $post = request()->param();
+        $tooken_res = $request->data;
+        $uuid = $tooken_res['data']->uuid;
+        $post['creater_uid'] = $uuid;
+        $bulletin_model = new BullteinModel();
+        $res = $bulletin_model->createBulletin($post);
+        if ($res === true) {
+            return $this->create('', '发送成功');
+        } else {
+            return $this->create($res, '发送失败', 204);
+        }
+    }
+
+        //获取通告
+        public function viewAllBulletin()
+        {
+            $post = request()->param();
+            // $tooken_res = $request->data;
+            // $uuid = $tooken_res['data']->uuid;
+            // $person_model = new PersonModel();
+            // $employee_model = new EmployeeModel();
+            $bulletin_model = new BullteinModel();
+            // $emp_info = $employee_model->getInfoByUuid($uuid);
+            $list_rows = !empty($post['list_rows']) ? $post['list_rows'] : '';
+            $list = $bulletin_model->getAllBulletin($list_rows, ['query' => $post]);
+            return $list;
+        }
+
+    /*********** */
+
+
+
     /**********数据库备份*********** */
 
     //获取备份文件列表
@@ -297,7 +334,7 @@ class Admin extends Base
 
         $dbname = !empty($post['dbname']) ? $post['dbname'] : config('database.connections.mysql.database');
         //替换反斜杠为斜杠
-        $post['file'] = str_replace('\\','/',$post['file']);
+        $post['file'] = str_replace('\\', '/', $post['file']);
         $databack->restoreSql($post['file'], $dbname);
         return $this->create([$post['file'], $dbname], '成功');
     }
