@@ -4,7 +4,7 @@
  * @Author: xch
  * @Date: 2020-11-23 01:30:43
  * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\Model\Bulletin.php
- * @LastEditTime: 2021-04-13 01:29:45
+ * @LastEditTime: 2021-04-24 22:13:04
  * @LastEditors: xch
  */
 
@@ -21,6 +21,15 @@ use app\model\Employee as EmployeeModel;
 
 class Bulletin extends Model
 {
+    //删除
+    public function deleteById($id){
+        try {
+            $this->destroy($id);
+        } catch (\Exception $e) {
+            return  $e->getMessage();
+        }
+        return true;
+    }
     //添加记录
     public function createBulletin($data)
     {

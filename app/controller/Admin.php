@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2021-04-13 01:21:41
+ * @LastEditTime: 2021-04-24 22:06:38
  * @LastEditors: xch
  * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\controller\Admin.php
  * @Description: 
@@ -293,6 +293,18 @@ class Admin extends Base
             $list_rows = !empty($post['list_rows']) ? $post['list_rows'] : '';
             $list = $bulletin_model->getAllBulletin($list_rows, ['query' => $post]);
             return $list;
+        }
+
+        //删除通告
+        public function deleteBulletin(){
+            $post = request()->param();
+            $bulletin_model = new BullteinModel();
+            $res = $bulletin_model->deleteById($post['id']);
+            if ($res === true) {
+                return $this->create('', '删除成功');
+            } else {
+                return $this->create($res, '删除失败', 204);
+            }
         }
 
     /*********** */

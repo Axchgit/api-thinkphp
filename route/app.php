@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:15:58
- * @LastEditTime: 2021-04-13 01:22:07
+ * @LastEditTime: 2021-04-24 22:07:03
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\route\app.php
@@ -83,6 +83,8 @@ Route::group('admin', function () {
     //发送通告
     Route::post('sendBulletin', 'sendBulletin')->middleware('checkrequest', 4)->allowCrossDomain();
     Route::get('viewAllBulletin', 'viewAllBulletin')->middleware('checkrequest', 4)->allowCrossDomain();
+    Route::get('deleteBulletin', 'deleteBulletin')->middleware('checkrequest', 4)->allowCrossDomain();
+
 
     
     
