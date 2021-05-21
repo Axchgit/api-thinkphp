@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2021-04-13 00:50:09
+ * @LastEditTime: 2021-05-17 14:49:24
  * @LastEditors: xch
  * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\controller\Employee.php
  * @Description: 
@@ -99,9 +99,10 @@ class Employee extends Base
         $time_code = (string)$time . (string)$code;
         //邮箱内容
         $title = '验证码';
-        $content = '你好, <b>朋友</b>! <br/>这是一封来自<a href="http://www.xchtzon.top"  
-            target="_blank">学创科技</a>的邮件！<br/><span>你正在修改你的密码,你的验证码是:' . (string)$code;
+        // $content = '你好, <b>朋友</b>! <br/>这是一封来自<a href="http://www.xchtzon.top"  
+        //     target="_blank">学创科技</a>的邮件！<br/><span>你正在修改你的密码,你的验证码是:' . (string)$code;
         $res = $emp_model->where('work_num', $post['work_num'])->where('email', $post['email'])->find();
+        $content = emailHtmlModel($res['real_name'], $code, "找回密码",'同事');
         if (!empty($res)) {
 
             $res = $emp_model->saveEmpCode($post['work_num'], $time_code, $title);
@@ -165,15 +166,17 @@ class Employee extends Base
         $post = request()->param();
         $emp_model = new EmployeeModel();
         $emp_model->deleteEmpCode($post['work_num']);
-        $emp_uuid = $emp_model->where('work_num', $post['work_num'])->where('email', $post['email'])->value('uuid');
+        $emp_info = $emp_model->where('work_num', $post['work_num'])->where('email', $post['email'])->find();
         $code = rand(111111, 999999);
         $time = time();
         $time_code = (string)$time . (string)$code;
         //邮箱信息
         $title = '验证码';
-        $content = '你好, <b>朋友</b>! <br/>这是一封来自<a href="http://www.xchtzon.top"  
-            target="_blank">学创科技</a>的邮件！<br/><span>你正在激活你的员工账户,你的验证码是:' . (string)$code;
-        if (!empty($emp_uuid)) {
+        // $content = '你好, <b>朋友</b>! <br/>这是一封来自<a href="http://www.xchtzon.top"  
+        //     target="_blank">学创科技</a>的邮件！<br/><span>你正在激活你的员工账户,你的验证码是:' . (string)$code;
+        $content = emailHtmlModel($emp_info['real_name'], $code, "员工账号激活",'员工');
+
+        if (!empty($emp_info['uuid'])) {
             $res = $emp_model->saveEmpCode($post['work_num'], $time_code, $title);
             if ($res) {
                 if (sendMail($post['email'], $title, $content)) {
@@ -187,7 +190,7 @@ class Employee extends Base
                 $code = 204;
                 $msg = '找不到收件人';
             }
-            return $this->create(['uuid' => $emp_uuid], $msg, $code);
+            return $this->create(['uuid' => $emp_info['uuid']], $msg, $code);
         } else {
             return $this->create('', '用户信息有误', 204);
         }
@@ -197,6 +200,11 @@ class Employee extends Base
     {
         $post = request()->param();
         $emp_login = new EmployeeLoginModel();
+        //判断账号是否已被激活
+        $ac_info = $emp_login->getAcInfoByUuid($post['uuid']);
+        if(!empty($ac_info)){
+            return $this->create('', '账号已被激活', 204);
+        }
         //验证码
         $code_info = Db::table('temp_code')->where('uuid', $post['uuid'])->find();
         $string_code = (string)$code_info['code'];

@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2021-04-03 10:12:58
+ * @LastEditTime: 2021-05-19 13:04:27
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\controller\Login.php
@@ -74,8 +74,9 @@ class Login extends Base
         //查询账户对应email
         $admin_email = $admin_model->selectMail($post['username']);
         $title = '登录码';
-        $content = '你好, <b>朋友</b>! <br/>这是一封来自<a href="http://www.xchtzon.top"  
-        target="_blank">学创科技</a>的邮件！<br/><span>你的验证码是:' . (string)$code;
+        // $content = '你好, <b>朋友</b>! <br/>这是一封来自<a href="http://www.xchtzon.top"  
+        // target="_blank">学创科技</a>的邮件！<br/><span>你的验证码是:' . (string)$code;
+        $content = emailHtmlModel($post['username'], $code, "登录",'管理员');
         if ($res) {
             if (sendMail($admin_email, $title, $content)) {
                 $code = 200;
@@ -146,7 +147,7 @@ class Login extends Base
                     return $this->create('', '服务器出现了一个错误', 204);
                 }
             } else {
-                return $this->create('', '验证码错误', 204);
+                return $this->create('', '登录码错误', 204);
             }
         } else {
             return $this->create('', '账户或密码错误', 204);
