@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2021-04-24 22:06:38
+ * @LastEditTime: 2021-05-18 16:20:17
  * @LastEditors: xch
  * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\controller\Admin.php
  * @Description: 
@@ -34,7 +34,7 @@ use think\facade\Db;
 class Admin extends Base
 {
     /**
-     * @description: 上传报表,读取报表数据存入数据库
+     * @description: 上传员工数据存入数据库
      * @param {type} 
      * @return {type} 
      */
@@ -230,7 +230,7 @@ class Admin extends Base
 
 
     /****************反馈处理 */
-    //查找所有业绩信息
+    //查询所有反馈信息
     public function selectFeedback()
     {
         $post = request()->param();
@@ -245,7 +245,7 @@ class Admin extends Base
         }
     }
 
-    //审核业绩
+    //处理信息反馈
     public function reviewFeedback(Request $request)
     {
         $post =  request()->param();

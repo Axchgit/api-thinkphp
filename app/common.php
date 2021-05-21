@@ -68,8 +68,8 @@ function sendMail($to, $title, $content)
 
 /**
  * @description: 创建全球唯一标识符
- * @param {type} 
- * @return {type} 
+//  * @param {type} 
+ * @return array|string
  */
 function  createGuid()
 {
@@ -97,7 +97,7 @@ function  createGuid()
  * @description: 生成token
  * @param {type} undefined
  * @param mixed $uuid
- * @return {string} $jwt:生成的jwt字符串
+ * @return string $jwt:生成的jwt字符串
  */
 function signToken($uuid, $role)
 {
@@ -120,7 +120,7 @@ function signToken($uuid, $role)
 /**
  * @description: 验证token
  * @param mixed $token:需要验证的token
- * @return {array|voide} 返回成功结果或者失败信息
+ * @return array|voide 返回成功结果或者失败信息
  */
 function checkToken($token)
 {
