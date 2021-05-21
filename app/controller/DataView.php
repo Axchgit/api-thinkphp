@@ -2,9 +2,9 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2020-09-20 17:37:52
- * @LastEditors: Chenhao Xing
- * @FilePath: 
+ * @LastEditTime: 2021-05-22 02:19:49
+ * @LastEditors: xch
+ * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\controller\DataView.php
  * @Description: 
  */
 
@@ -109,7 +109,7 @@ class DataView extends Base
                 $sum_commission += $goods_model->getCountCommissionByGoodsId($v1);
             }
             // $data[$k]['goods_id_count'] = count($goods_id_list);
-            $data[$k]['sum_commission'] = $sum_commission/100;
+            $data[$k]['sum_commission'] = $sum_commission / 100;
 
             // break;
         }
@@ -118,6 +118,33 @@ class DataView extends Base
         array_multisort($sum_commission, SORT_DESC, $data);
         return $this->create($data);
     }
+
+
+    //获取每日出单量（订单）
+    public function getOrderSumByDayInFourWeek()
+    {
+        $goods_model = new GoodsModel();
+        $res = $goods_model->countOrderSumByDayInFourWeek();
+        return $this->create($res, '查询成功');
+    }
+
+    //获取每日出单量（订单）
+    public function getPerformanceAndCommissionSumInMonth()
+    {
+        $goods_model = new GoodsModel();
+        $res = $goods_model->countPerformanceAndCommissionSumInMonth();
+        return $this->create($res, '查询成功');
+    }
+
+
+    //获取每日出单量（订单）
+    public function getGoodsNumSumInMonth()
+    {
+        $goods_model = new GoodsModel();
+        $res = $goods_model->countGoodsNumInMonth();
+        return $this->create($res, '查询成功');
+    }
+
 
 
 

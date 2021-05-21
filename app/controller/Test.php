@@ -2,10 +2,10 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2020-09-14 18:38:37
- * @LastEditors: Chenhao Xing
+ * @LastEditTime: 2021-05-21 18:10:10
+ * @LastEditors: xch
  * @Description: 
- * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\controller\Test.php
+ * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\controller\Test.php
  */
 
 
@@ -54,7 +54,11 @@ class Test extends Base
     public function testOne(){
         // $admin_model = new AdminModel();
         // $data = $admin_model->saveLogcode('呵粑粑牛',12321);
-        return json(true);
+        // return json(true);
+        // $per_model = new PerformanceModel();
+        // $employee_model = new EmployeeModel();
+        $goods_model = new GoodsModel();
+        return $goods_model->testOne();
     }
     public function testTwo(){
         // $admin_model = new AdminModel();
