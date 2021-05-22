@@ -2,10 +2,10 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2020-09-20 12:25:30
- * @LastEditors: Chenhao Xing
+ * @LastEditTime: 2021-05-23 00:38:34
+ * @LastEditors: xch
  * @Description: 员工信息
- * @FilePath: \epdemoc:\wamp64\www\api-thinkphp\app\Model\Performance.php
+ * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\Model\Performance.php
  */
 
 namespace app\model;
@@ -176,26 +176,160 @@ class Performance extends Model
     /**************DataView方法 */
 
     //获取业绩排名
-    public function getPerformanceRanking()
-    {
+    // public function getPerformanceRanking()
+    // {
 
-        // Db::table('score')->field('user_id,SUM(score) AS sum_score')->group('user_id')->select();
-        // return $this->orderRaw()->field('uuid,count(uuid)')->group('uuid')->select();
-        // return $this->field('uuid,count(uuid)')->group('uuid')->order('count(uuid)','desc')->select();
-        return $this->field('uuid,count(uuid)')->group('uuid')->select();
-    }
+    //     // Db::table('score')->field('user_id,SUM(score) AS sum_score')->group('user_id')->select();
+    //     // return $this->orderRaw()->field('uuid,count(uuid)')->group('uuid')->select();
+    //     // return $this->field('uuid,count(uuid)')->group('uuid')->order('count(uuid)','desc')->select();
+    //     return $this->field('uuid,count(uuid)')->group('uuid')->select();
+    // }
     //获取业绩里所有uuid
-    public function getPerformanceAllUuid()
-    {
-        return $this->field('uuid')->group('uuid')->select();
-    }
+    // public function getPerformanceAllUuid()
+    // {
+    //     return $this->field('uuid')->group('uuid')->select();
+    // }
 
     //根据uuid查询每个uuid下的goods_id
-    public function getGoodsIdByUuid($uuid){
-        return $this->where('uuid',$uuid)->column('goods_id');
+    // public function getGoodsIdByUuid($uuid){
+    //     return $this->where('uuid',$uuid)->column('goods_id');
+    // }
+
+    //获取本月员工业绩排名
+    public function sumPerformanceRankingInThisMonth()
+    {
+        $first_stamp = mktime(0, 0, 0, (int)date('m'), 1, (int)date('Y'));  //获取本月第一天时间戳
+        //本月第一天到现在
+        $start_time = date('Y-m-d H:i:s', $first_stamp);
+        $end_time = date('Y-m-d H:i:s', strtotime('+0 days'));
+
+
+        $list =  Db::table('employee')
+            ->alias('a')
+            ->join('performance b', 'a.uuid = b.uuid')
+            ->field('real_name as name')
+            ->whereBetweenTime('b.create_time', $start_time, $end_time)
+            ->fieldRaw('count(goods_id) as value')
+            ->order('value','desc')
+            ->group('real_name')
+            ->select();
+        return $list;
     }
 
 
+    //获取本月员工业绩排名
+    public function sumPerformanceRankingWithinDay()
+    {
+        // $first_stamp = mktime(0, 0, 0, (int)date('m'), 1, (int)date('Y'));  //获取本月第一天时间戳
+        // //本月第一天到现在
+        // $start_time = date('Y-m-d H:i:s', $first_stamp);
+        // $end_time = date('Y-m-d H:i:s', strtotime('+0 days'));
+
+        $now = date('Y-m-d H:i:s');
+
+        $yesterday = date('Y-m-d H:i:s', strtotime('-1 days'));
+        
+        $list =  Db::table('employee')
+            ->alias('a')
+            ->join('performance b', 'a.uuid = b.uuid')
+            ->field('real_name as name')
+            ->whereBetweenTime('b.create_time', $yesterday, $now)
+            ->fieldRaw('count(goods_id) as value')
+            ->order('value','desc')
+            ->group('real_name')
+            ->select();
+        return $list;
+    }
+
+
+    //获取本月员工佣金排行
+    public function sumCommissionInThisMonth()
+    {
+        $first_stamp = mktime(0, 0, 0, (int)date('m'), 1, (int)date('Y'));  //获取本月第一天时间戳
+        //本月第一天到现在
+        $start_time = date('Y-m-d H:i:s', $first_stamp);
+        $end_time = date('Y-m-d H:i:s', strtotime('+0 days'));
+
+
+        $list =  Db::table('employee')
+            ->alias('a')
+            ->join('performance b', 'a.uuid = b.uuid')
+            ->join('goods c', 'b.goods_id = c.goods_id')
+
+            ->field('a.real_name as name')
+            //设置查询时间为从本月1号开始到现在
+            ->whereBetweenTime('b.create_time', $start_time, $end_time)
+            ->fieldRaw('sum(expec_commission)*0.01 as sum_commission')
+            ->order('sum_commission', 'desc')
+            ->group('a.real_name')
+            ->select();
+
+        return $list;
+    }
+
+    //获取业绩金额统计
+    public function sumCommissionAndPerformanceWithinMonthAndDay()
+    {
+        $first_stamp = mktime(0, 0, 0, (int)date('m'), 1, (int)date('Y'));  //获取本月第一天时间戳
+
+        // $id = Db::table('goods')->min('id');
+        // $data = Db::table('goods')->where('id', $id)->value('payment_time');
+        // $nowStamp = strtotime($data);
+
+        $first_stamp_time = date('Y-m-d H:i:s', $first_stamp);
+        // $start_time = date('Y-m-d H:i:s', $nowStamp);
+        // $end_time = date('Y-m-d H:i:s', strtotime('-1 days', $nowStamp));
+        $now = date('Y-m-d H:i:s');
+
+        $yesterday = date('Y-m-d H:i:s', strtotime('-1 days'));
+
+        $per_today = $this->whereBetweenTime('create_time', $yesterday, $now)->count();
+        $per_month = $this->whereBetweenTime('create_time', $first_stamp_time, $now)->count();
+
+
+        $com_today =  Db::table('performance')
+            ->alias('a')
+            // ->join('performance b', 'a.uuid = b.uuid')
+            ->join('goods b', 'a.goods_id = b.goods_id')
+
+            // ->field('a.real_name as name')
+            ->whereBetweenTime('a.create_time', $yesterday, $now)
+            ->fieldRaw('sum(expec_commission)*0.01 as sum_commission')
+            // ->order('sum_commission','desc')
+            // ->group('a.real_name')
+            ->select();
+
+        $com_month =  Db::table('performance')
+            ->alias('a')
+            // ->join('performance b', 'a.uuid = b.uuid')
+            ->join('goods b', 'a.goods_id = b.goods_id')
+
+            // ->field('a.real_name as name')
+            //设置查询时间为从本月1号开始到现在
+            ->whereBetweenTime('a.create_time', $first_stamp_time, $now)
+            ->fieldRaw('sum(expec_commission)*0.01 as sum_commission')
+            // ->order('sum_commission','desc')
+            // ->group('a.real_name')
+            ->select();
+
+        // return  ['first_stamp_time'=>$first_stamp_time,'start_time'=>$start_time,'end_time'=>$end_time,'com_month'=>$com_month];
+
+        return  ['per_today' => $per_today, 'per_month' => $per_month, 'com_today' => (float)$com_today[0]['sum_commission'], 'com_month' => (float)$com_month[0]['sum_commission']];
+    }
+
+
+    //所占百分比
+    public function countPerformancePercentage(){
+        $now = date('Y-m-d H:i:s');
+
+        $yesterday = date('Y-m-d H:i:s', strtotime('-1 days'));
+
+        $per_today = $this->whereBetweenTime('create_time', $yesterday, $now)->count();
+
+        $percentage = $per_today/15;
+        return $percentage;
+
+    }
 
 
     //结束

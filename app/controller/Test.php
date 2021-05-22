@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2021-05-21 18:10:10
+ * @LastEditTime: 2021-05-22 21:06:09
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\controller\Test.php
@@ -37,7 +37,6 @@ class Test extends Base
 
     }
     public function seven(){
-
         $post =  request()->param();
         $gt_model = new GoodsTempModel();
         $data = $gt_model->insertGoods($post);
@@ -52,6 +51,8 @@ class Test extends Base
     }
 
     public function testOne(){
+        // return date('m');
+        return mktime(6,0,0,(int)date('m'),(int)date('d'),(int)date('Y'));
         // $admin_model = new AdminModel();
         // $data = $admin_model->saveLogcode('呵粑粑牛',12321);
         // return json(true);
@@ -63,6 +64,9 @@ class Test extends Base
     public function testTwo(){
         // $admin_model = new AdminModel();
         // $data = $admin_model->deleteLogcode('呵粑粑牛');
+        return date('Y-m-d H:i:s');
+
+
         return time();
     }
     //获取一个uuid

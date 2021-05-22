@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 12:01:16
- * @LastEditTime: 2021-05-22 02:44:44
+ * @LastEditTime: 2021-05-22 21:07:08
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\Model\Goods.php
@@ -244,15 +244,15 @@ class Goods extends Model
         $data = $this->where('id', $id)->value('payment_time');
         $nowStamp = strtotime($data);
         $count = [];
-        $start=[];
-        $end=[];
+        $start = [];
+        $end = [];
         // $startDay = date('Y-m-d H:m:s', strtotime('-5 days', strtotime($data)));
         for ($i = 0; $i < 28; $i++) {
-            $j=$i+1;
+            $j = $i + 1;
             // $startTime = date('Y-m-d H:m:s', strtotime('+1 days', $nowStamp));
             // $endTime = date('Y-m-d H:m:s', strtotime('-10 days', $nowStamp));
-            $start_time = date('Y-m-d H:m:s', strtotime('-' . "$i" . ' days', $nowStamp));
-            $end_time = date('Y-m-d H:m:s', strtotime('-' . "$j" . ' days', $nowStamp));
+            $start_time = date('Y-m-d H:i:s', strtotime('-' . "$i" . ' days', $nowStamp));
+            $end_time = date('Y-m-d H:i:s', strtotime('-' . "$j" . ' days', $nowStamp));
             $count[$i] = $this->whereBetweenTime('payment_time', $end_time, $start_time)->count();
             // $start[$i] = $start_time;
             // $end[$i] = $end_time;
@@ -267,64 +267,83 @@ class Goods extends Model
         // $sum = $this->whereBetween('payment_time',"44000,44071")->count();
         // createTime = (time - 25569) * 24 * 3600
         // $time = strtotime($data);
-        return [$nowStamp,$count];
+        return [$nowStamp, $count];
     }
     //统计本月佣金及签约量
-    public function countPerformanceAndCommissionSumInMonth(){
+    public function countPerformanceAndCommissionSumInMonth()
+    {
         $id = $this->min('id');
         $data = $this->where('id', $id)->value('payment_time');
         $nowStamp = strtotime($data);
         $count = [];
-        $countNum=0;
-        $start=[];
-        $end=[];
+        $countNum = 0;
+        $start = [];
+        $end = [];
         // $startDay = date('Y-m-d H:m:s', strtotime('-5 days', strtotime($data)));
-        for ($i = 29; $i >=0; $i--) {
-            $j=$i+1;
-            
-            $start_time = date('Y-m-d H:m:s', strtotime('-' . "$i" . ' days', $nowStamp));
-            $end_time = date('Y-m-d H:m:s', strtotime('-' . "$j" . ' days', $nowStamp));
+        for ($i = 29; $i >= 0; $i--) {
+            $j = $i + 1;
+
+            $start_time = date('Y-m-d H:i:s', strtotime('-' . "$i" . ' days', $nowStamp));
+            $end_time = date('Y-m-d H:i:s', strtotime('-' . "$j" . ' days', $nowStamp));
             $count[$countNum] = $this->whereBetweenTime('payment_time', $end_time, $start_time)->sum("expec_commission");
             // $start[$i] = $start_time;
             // $end[$i] = $end_time;
-            if($count[$countNum]>=20000){
-                $count[$countNum]= 15000;
+            if ($count[$countNum] >= 20000) {
+                $count[$countNum] = 15000;
             }
-            $monthDay[$countNum]=date('m/d', strtotime('-' . "$i" . ' days', $nowStamp));
-            $countNum+=1;
-
+            $monthDay[$countNum] = date('m/d', strtotime('-' . "$i" . ' days', $nowStamp));
+            $countNum += 1;
         }
-        return [$monthDay,$count];
-
+        return [$monthDay, $count];
     }
 
 
 
-        //统计本月佣金及签约量
-        public function countGoodsNumInMonth(){
-            $id = $this->min('id');
-            $data = $this->where('id', $id)->value('payment_time');
-            $nowStamp = strtotime($data);
-            $count = [];
-            $countNum=0;
-            $start=[];
-            $end=[];
-            // $startDay = date('Y-m-d H:m:s', strtotime('-5 days', strtotime($data)));
-            for ($i = 29; $i >=0; $i--) {
-                $j=$i+1;
-                
-                $start_time = date('Y-m-d H:m:s', strtotime('-' . "$i" . ' days', $nowStamp));
-                $end_time = date('Y-m-d H:m:s', strtotime('-' . "$j" . ' days', $nowStamp));
-                $count[$countNum] = $this->whereBetweenTime('payment_time', $end_time, $start_time)->group('goods_id')->count();
-                // $start[$i] = $start_time;
-                // $end[$i] = $end_time;
-                // $monthDay[$countNum]=date('m/d', strtotime('-' . "$i" . ' days', $nowStamp));
-                $countNum+=1;
-    
-            }
-            return $count;
-    
+    //统计近一个月月佣金及签约量
+    public function countGoodsNumInMonth()
+    {
+        $id = $this->min('id');
+        $data = $this->where('id', $id)->value('payment_time');
+        $nowStamp = strtotime($data);
+        $count = [];
+        $countNum = 0;
+        $start = [];
+        $end = [];
+        // $startDay = date('Y-m-d H:m:s', strtotime('-5 days', strtotime($data)));
+        for ($i = 29; $i >= 0; $i--) {
+            $j = $i + 1;
+
+            $start_time = date('Y-m-d H:i:s', strtotime('-' . "$i" . ' days', $nowStamp));
+            $end_time = date('Y-m-d H:i:s', strtotime('-' . "$j" . ' days', $nowStamp));
+            $count[$countNum] = $this->whereBetweenTime('payment_time', $end_time, $start_time)->group('goods_id')->count();
+            // $start[$i] = $start_time;
+            // $end[$i] = $end_time;
+            // $monthDay[$countNum]=date('m/d', strtotime('-' . "$i" . ' days', $nowStamp));
+            $countNum += 1;
         }
+        return $count;
+    }
+
+    //获取出单量
+    public function countGoodsNumWithinDayAndMonth()
+    {
+        $first_stamp = mktime(0, 0, 0, (int)date('m'), 1, (int)date('Y'));  //获取本月第一天时间戳
+
+        $id = $this->min('id');
+        $data = $this->where('id', $id)->value('payment_time');
+        $nowStamp = strtotime($data);
+
+        $start_time = date('Y-m-d H:i:s', $nowStamp);
+        $end_time = date('Y-m-d H:i:s', strtotime('-1 days', $nowStamp));
+        $today = $this->whereBetweenTime('payment_time', $end_time, $start_time)->group('goods_id')->count();
+
+        $start_time = date('Y-m-d H:i:s', $first_stamp);
+        $end_time = date('Y-m-d H:i:s', strtotime('-0 days'));
+        $month = $this->whereBetweenTime('payment_time', $start_time, $end_time)->group('goods_id')->count();
+
+        return [$today,$month];
+    }
+    
 
 
 

@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:34:38
- * @LastEditTime: 2021-05-19 13:04:27
+ * @LastEditTime: 2021-05-22 10:02:03
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\controller\Login.php
@@ -138,7 +138,7 @@ class Login extends Base
                     $records = [
                         'uuid' => $admin_info['uuid'],
                         'login_time' => time(),
-                        'login_ip' => request()->host()
+                        'login_ip' => request()->ip()
                     ];
                     Db::table('login_record')->insert($records);
                     //成功返回token及uuid
@@ -178,7 +178,7 @@ class Login extends Base
             $records = [
                 'uuid' => $ea_info['uuid'],
                 'login_time' => time(),
-                'login_ip' => request()->host()
+                'login_ip' => request()->ip()
             ];
             if (Db::table('login_record')->insert($records)) {
                 //成功返回token及uuid
