@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-17 22:03:01
- * @LastEditTime: 2021-05-18 16:20:17
+ * @LastEditTime: 2021-05-27 02:24:11
  * @LastEditors: xch
  * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\app\controller\Admin.php
  * @Description: 
@@ -135,9 +135,9 @@ class Admin extends Base
     {
         $post = request()->param();
         $performance_model = new PerformanceModel();
-        $key = !empty($post['key']) ? $post['key'] : '';
-        $value = !empty($post['value']) ? $post['value'] : '';
-        $list = $performance_model->getPerformance($key, $value, $post['list_rows'], false, ['query' => $post]);
+        $list_rows = !empty($post['list_rows']) ? $post['list_rows'] : '';
+
+        $list = $performance_model->getPerformance($list_rows, ['query' => $post],$post);
         if ($list) {
             return $this->create($list, '查询成功');
         } else {
