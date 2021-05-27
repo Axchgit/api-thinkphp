@@ -2,8 +2,8 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:15:58
- * @LastEditTime: 2021-05-27 17:01:59
- * @LastEditors: xch
+ * @LastEditTime: 2021-05-27 17:53:48
+ * @LastEditors: 罗曼
  * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\config\database.php
  * @Description: 此为生产环境下的配置,开发环境配置在.env中
  */
@@ -35,7 +35,7 @@ return [
             // 用户名
             'username'          => env('database.username', 'root'),
             // 密码
-            'password'          => env('database.password', 'root'),
+            'password'          => env('database.password', ''),
             // 端口
             'hostport'          => env('database.hostport', '3306'),
             // 数据库连接参数
