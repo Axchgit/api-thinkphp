@@ -2,7 +2,7 @@
 /*
  * @Author: xch
  * @Date: 2020-08-15 11:15:58
- * @LastEditTime: 2021-04-24 22:07:03
+ * @LastEditTime: 2021-10-27 12:09:51
  * @LastEditors: xch
  * @Description: 
  * @FilePath: \vue-framed:\wamp64\www\api-thinkphp\route\app.php
@@ -30,9 +30,12 @@ Route::get('test/testone', 'Test/testOne')->middleware('checkrequest', 6)->allow
 
 Route::get('test/testfive', 'Test/testFive')->middleware('checkrequest', 6)->allowCrossDomain();
 Route::get('test/testtwo', 'Test/testTwo')->allowCrossDomain();
+Route::post('apps/callback', 'Apps/callback')->allowCrossDomain();
+
 
 /****公共模块*****/
 Route::group('index', function () {
+    Route::post('apps', 'apps')->allowCrossDomain();
 
     Route::get('getProfile', 'getProfile')->middleware('checkrequest', 9)->allowCrossDomain();
     Route::rule('uploadAvatar', 'uploadAvatar')->middleware('checkrequest', 9)->allowCrossDomain();
